@@ -65,11 +65,11 @@ public class ProductServiceImpl implements ProductService{
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id - " + productId));
 
-        existingProduct.setName(request.getName()!=null && !request.getName().isEmpty() ? request.getName() : existingProduct.getName());
-        existingProduct.setBrand(request.getBrand()!=null && !request.getBrand().isEmpty()? request.getBrand() : existingProduct.getBrand());
+        existingProduct.setName(request.getName()!=null && request.getName().isEmpty() ? request.getName() : existingProduct.getName());
+        existingProduct.setBrand(request.getBrand()!=null && request.getBrand().isEmpty()? request.getBrand() : existingProduct.getBrand());
         existingProduct.setInventory(request.getInventory()>=0 ? request.getInventory() : existingProduct.getInventory());
-        existingProduct.setPrice(request.getPrice().compareTo(new BigDecimal(0))>=0? request.getPrice() : existingProduct.getPrice());
-        existingProduct.setDescription(request.getDescription()!=null && !request.getDescription().isEmpty()? request.getDescription() : existingProduct.getDescription());
+        existingProduct.setPrice(request.getPrice().compareTo(new BigDecimal(0))>=0?request.getPrice():existingProduct.getPrice());
+        existingProduct.setDescription(request.getDescription()!=null && request.getDescription().isEmpty()? request.getDescription() : existingProduct.getDescription());
 
         Category category = categoryRepository.findByName(request.getCategory().getName());
         existingProduct.setCategory(Objects.requireNonNullElseGet(category, () -> new Category(request.getCategory().getName())));
