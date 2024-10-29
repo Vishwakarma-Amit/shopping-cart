@@ -9,39 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CategoryServiceImpl implements CategoryService{
+public class CategoryServiceImpl {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Override
-    public Category getCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(()->new ResourceNotFoundException("Category not found with id: "+categoryId));
-    }
-
-    @Override
-    public Category getCategoryByName(String categoryName) {
-        return categoryRepository.findByName(categoryName);
-    }
-
-    @Override
-    public List<Category> getAllCategory() {
-        return categoryRepository.findAll();
-    }
-
-    @Override
-    public Category addCategory(Category category) {
-        return null;
-    }
-
-    @Override
-    public Category updateCategory(Category category, Long categoryId) {
-        return null;
-    }
-
-    @Override
-    public void deleteCategory(String categoryId) {
-
-    }
 }
