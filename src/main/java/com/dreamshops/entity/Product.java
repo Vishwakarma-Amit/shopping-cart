@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +18,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Entity
@@ -31,7 +29,17 @@ public class Product {
 	private String name;
 	private String brand;
 	private BigDecimal price;
-	private int inventry;
+
+	public Product(String name, String brand, BigDecimal price, int inventory, String description, Category category) {
+		this.name = name;
+		this.brand = brand;
+		this.price = price;
+		this.inventory = inventory;
+		this.description = description;
+		this.category = category;
+	}
+
+	private int inventory;
 	private String description;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
