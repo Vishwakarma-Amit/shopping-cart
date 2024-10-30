@@ -1,8 +1,10 @@
 package com.dreamshops.service.category;
 
 import com.dreamshops.entity.Category;
+import com.dreamshops.exception.AlreadyExistsException;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CategoryRepository;
+import com.dreamshops.request.CategoryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +33,22 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public Category addCategory(Category category) {
-        return null;
+    public Category addCategory(CategoryRequest request) {
+        Category exists = categoryRepository.existsByName(request.getName());
+        if(exists!=null){
+            throw new AlreadyExistsException("Category already exits with the name: "+request.getName());
+        }
+        return categoryRepository.save(new Category(request.getName()));
     }
 
     @Override
     public Category updateCategory(Category category, Long categoryId) {
-        return null;
+        Category savedCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(()->new ResourceNotFoundException("Category not found with id: "+categoryId));
+
+        savedCategory.setName(category.getName()!=null && category.getName().isEmpty() ? category.getName() : savedCategory.getName());
+
+        return categoryRepository.save(savedCategory);
     }
 
     @Override

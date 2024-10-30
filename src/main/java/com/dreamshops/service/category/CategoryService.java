@@ -1,6 +1,7 @@
 package com.dreamshops.service.category;
 
 import com.dreamshops.entity.Category;
+import com.dreamshops.request.CategoryRequest;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface CategoryService {
 
     List<Category> getAllCategory();
 
-    Category addCategory(Category category);
+    Category addCategory(CategoryRequest request);
 
     Category updateCategory(Category category, Long categoryId);
 
