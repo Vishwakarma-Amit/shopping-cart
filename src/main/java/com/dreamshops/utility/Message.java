@@ -7,4 +7,7 @@ public class Message {
     public static final String UPDATE_FAILED = "Update failed!";
     public static final String DELETE_SUCCESSFUL = "Deleted successfully!";
     public static final String DELETE_FAILED = "Delete failed!";
+    public static final String SUCCESS = "success";
+    public static final String FAILED = "failed!";
+
 }

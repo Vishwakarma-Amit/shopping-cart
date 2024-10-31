@@ -55,21 +55,21 @@ public class ImageController {
                 return new ResponseEntity<>(new ApiResponse(Message.UPDATE_SUCCESSFUL, null), HttpStatus.OK);
             }
         } catch (ResourceNotFoundException  e) {
-            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), e.getMessage()), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED, null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @DeleteMapping("/image/delete/{imageId}")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId) {
-        Image image = imageService.getImageById(imageId);
         try {
+            Image image = imageService.getImageById(imageId);
             if(image!=null ){
                 imageService.deleteImageById(imageId);
                 return new ResponseEntity<>(new ApiResponse(Message.DELETE_SUCCESSFUL, null), HttpStatus.OK);
             }
         } catch (ResourceNotFoundException  e) {
-            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), e.getMessage()), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(new ApiResponse(Message.DELETE_FAILED, null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
