@@ -7,7 +7,7 @@ import com.dreamshops.request.ProductRequest;
 
 public interface ProductService {
 	
-	Product add (ProductRequest request);
+	Product addProduct (ProductRequest request);
 	
 	Product getProductById(Long productId);
 	
