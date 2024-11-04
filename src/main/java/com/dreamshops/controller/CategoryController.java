@@ -67,20 +67,20 @@ public class CategoryController {
             categoryService.deleteCategory(categoryId);
             return new ResponseEntity<>(new ApiResponse(Message.DELETE_SUCCESSFUL,null), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse(Message.DELETE_FAILED,ex.getMessage()), HttpStatus.NOT_FOUND);
         }catch (Exception ex){
-            return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ApiResponse(Message.DELETE_FAILED,ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<ApiResponse> updateCategory(@RequestBody Category category, @PathVariable Long categoryId){
         try{
-            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS,categoryService.updateCategory(category, categoryId)), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(Message.UPDATE_SUCCESSFUL,categoryService.updateCategory(category, categoryId)), HttpStatus.OK);
         }catch (AlreadyExistsException ex) {
-            return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new ApiResponse(Message.UPLOAD_FAILED,ex.getMessage()), HttpStatus.CONFLICT);
         }catch (Exception ex){
-            return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED,ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

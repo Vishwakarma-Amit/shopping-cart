@@ -55,7 +55,7 @@ public class ImageController {
                 return new ResponseEntity<>(new ApiResponse(Message.UPDATE_SUCCESSFUL, null), HttpStatus.OK);
             }
         } catch (ResourceNotFoundException  e) {
-            return new ResponseEntity<>(new ApiResponse(e.getMessage(), e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED, e.getMessage()), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED, null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -69,7 +69,7 @@ public class ImageController {
                 return new ResponseEntity<>(new ApiResponse(Message.DELETE_SUCCESSFUL, null), HttpStatus.OK);
             }
         } catch (ResourceNotFoundException  e) {
-            return new ResponseEntity<>(new ApiResponse(e.getMessage(), e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse(Message.DELETE_FAILED, e.getMessage()), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(new ApiResponse(Message.DELETE_FAILED, null), HttpStatus.INTERNAL_SERVER_ERROR);
     }

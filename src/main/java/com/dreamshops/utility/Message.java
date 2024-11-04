@@ -9,5 +9,6 @@ public class Message {
     public static final String DELETE_FAILED = "Delete failed!";
     public static final String SUCCESS = "success";
     public static final String FAILED = "failed!";
+    public static final String NOT_FOUND = "Not found";
 
 }
