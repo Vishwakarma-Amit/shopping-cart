@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CategoryService {
 
-    Category getCategoryById(Long categoryId);
+    Category getCategoryById(int categoryId);
 
     Category getCategoryByName(String categoryName);
 
@@ -15,7 +15,7 @@ public interface CategoryService {
 
     Category addCategory(CategoryRequest request);
 
-    Category updateCategory(Category category, Long categoryId);
+    Category updateCategory(Category category, int categoryId);
 
-    void deleteCategory(Long categoryId);
+    void deleteCategory(int categoryId);
 }

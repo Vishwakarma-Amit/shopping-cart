@@ -10,12 +10,12 @@ public interface ImageService {
 
     Image getImageByUrl(String downloadUrl);
 
-    Image getImageById(Long imageId);
+    Image getImageById(int imageId);
 
-    void deleteImageById(Long imageId);
+    void deleteImageById(int imageId);
 
-    List<ImageDto> saveImage(List<MultipartFile> file, Long productId);
+    List<ImageDto> saveImage(List<MultipartFile> file, int productId);
 
-    Image updateImage(MultipartFile file, Long imageId);
+    Image updateImage(MultipartFile file, int imageId);
 
 }

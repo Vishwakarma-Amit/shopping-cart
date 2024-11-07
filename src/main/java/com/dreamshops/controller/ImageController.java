@@ -28,7 +28,7 @@ public class ImageController {
     private ImageService imageService;
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse> saveImages(@RequestParam List<MultipartFile> files, @RequestParam Long productId){
+    public ResponseEntity<ApiResponse> saveImages(@RequestParam List<MultipartFile> files, @RequestParam int productId){
         try {
             List<ImageDto> imageDtos = imageService.saveImage(files, productId);
             return new ResponseEntity<>(new ApiResponse(Message.UPLOAD_SUCCESSFUL, imageDtos), HttpStatus.OK);
@@ -39,15 +39,15 @@ public class ImageController {
     }
 
     @GetMapping("/download/{imageId}")
-    public ResponseEntity<Resource> downloadImage(@PathVariable Long imageId) throws SQLException {
+    public ResponseEntity<Resource> downloadImage(@PathVariable int imageId) throws SQLException {
         Image image = imageService.getImageById(imageId);
         ByteArrayResource resource = new ByteArrayResource(image.getImage().getBytes(1, (int)image.getImage().length()));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +image.getFileName()+ "\"").body(resource);
     }
 
-    @PutMapping("/image/update/{imageId}")
-    public ResponseEntity<ApiResponse> updateImage(@PathVariable Long imageId, @RequestBody MultipartFile file) {
+    @PutMapping("/update/{imageId}")
+    public ResponseEntity<ApiResponse> updateImage(@PathVariable int imageId, @RequestBody MultipartFile file) {
         try {
             Image image = imageService.getImageById(imageId);
             if(image!=null ){
@@ -60,8 +60,8 @@ public class ImageController {
         return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED, null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @DeleteMapping("/image/delete/{imageId}")
-    public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId) {
+    @DeleteMapping("/delete/{imageId}")
+    public ResponseEntity<ApiResponse> deleteImage(@PathVariable int imageId) {
         try {
             Image image = imageService.getImageById(imageId);
             if(image!=null ){

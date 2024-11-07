@@ -29,7 +29,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<ApiResponse> getCategoryById(@PathVariable Long categoryId){
+    public ResponseEntity<ApiResponse> getCategoryById(@PathVariable int categoryId){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS,categoryService.getCategoryById(categoryId)), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
@@ -62,7 +62,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<ApiResponse> deleteCategoryById(@PathVariable Long categoryId){
+    public ResponseEntity<ApiResponse> deleteCategoryById(@PathVariable int categoryId){
         try{
             categoryService.deleteCategory(categoryId);
             return new ResponseEntity<>(new ApiResponse(Message.DELETE_SUCCESSFUL,null), HttpStatus.OK);
@@ -74,7 +74,7 @@ public class CategoryController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse> updateCategory(@RequestBody Category category, @PathVariable Long categoryId){
+    public ResponseEntity<ApiResponse> updateCategory(@RequestBody Category category, @PathVariable int categoryId){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.UPDATE_SUCCESSFUL,categoryService.updateCategory(category, categoryId)), HttpStatus.OK);
         }catch (AlreadyExistsException ex) {
