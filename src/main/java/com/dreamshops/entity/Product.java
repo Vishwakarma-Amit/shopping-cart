@@ -24,8 +24,8 @@ import lombok.ToString;
 public class Product {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long productId;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int productId;
 	private String name;
 	private String brand;
 	private BigDecimal price;

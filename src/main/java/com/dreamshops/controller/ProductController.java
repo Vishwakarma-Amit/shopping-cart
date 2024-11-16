@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ApiResponse> getProductById(@PathVariable Long productId) {
+    public ResponseEntity<ApiResponse> getProductById(@PathVariable int productId) {
         try {
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, productService.getProductById(productId)), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
@@ -50,7 +50,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/{categoryName}")
+    @GetMapping("/category/{categoryName}")
     public ResponseEntity<ApiResponse> getProductsByCategory(@PathVariable String categoryName) {
         try {
             List<Product> productsByCategory = productService.getProductsByCategory(categoryName);
@@ -64,7 +64,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<ApiResponse> updateProduct(@RequestBody ProductRequest productRequest, @PathVariable Long productId){
+    public ResponseEntity<ApiResponse> updateProduct(@RequestBody ProductRequest productRequest, @PathVariable int productId){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.UPDATE_SUCCESSFUL, productService.updateProduct(productRequest, productId)), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
@@ -75,7 +75,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<ApiResponse> deleteProductById(@PathVariable Long productId) {
+    public ResponseEntity<ApiResponse> deleteProductById(@PathVariable int productId) {
         try {
             return new ResponseEntity<>(new ApiResponse(Message.DELETE_SUCCESSFUL, null), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
@@ -85,7 +85,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/{brandName}")
+    @GetMapping("/brand/{brandName}")
     public ResponseEntity<ApiResponse> getProductsByBrand(@PathVariable String brandName) {
         try {
             List<Product> productsByBrand = productService.getProductsByBrand(brandName);
@@ -98,7 +98,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/{brandName}/{categoryName}")
+    @GetMapping("/bac/{brandName}/{categoryName}")
     public ResponseEntity<ApiResponse> getProductsByCategoryAndBrand(@PathVariable String brandName, @PathVariable String categoryName) {
         try {
             List<Product> productsByCategoryAndBrand = productService.getProductsByCategoryAndBrand(categoryName, brandName);
@@ -111,7 +111,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/{productName}")
+    @GetMapping("/name/{productName}")
     public ResponseEntity<ApiResponse> getProductsByName(@PathVariable String productName) {
         try {
             List<Product> productsByName = productService.getProductsByName(productName);
@@ -124,7 +124,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/count/{brandName}/{productName}")
+    @GetMapping("/ban/{brandName}/{productName}")
     public ResponseEntity<ApiResponse> getProductsByNameAndBrand(@PathVariable String brandName, @PathVariable String productName) {
         try {
             List<Product> productsByBrandAndName = productService.getProductsByBrandAndName(brandName, productName);
@@ -137,7 +137,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/{brandName}/{productName}")
+    @GetMapping("/count/{brandName}/{productName}")
     public ResponseEntity<ApiResponse> countProductsByBrandAndName(@PathVariable String brandName, @PathVariable String productName) {
         try {
             Long count = productService.countProductsByBrandAndName(brandName, productName);

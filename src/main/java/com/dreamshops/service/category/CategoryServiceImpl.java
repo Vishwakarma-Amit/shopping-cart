@@ -17,7 +17,7 @@ public class CategoryServiceImpl implements CategoryService{
     private CategoryRepository categoryRepository;
 
     @Override
-    public Category getCategoryById(Long categoryId) {
+    public Category getCategoryById(int categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(()->new ResourceNotFoundException("Category not found with id: "+categoryId));
     }
@@ -34,15 +34,15 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public Category addCategory(CategoryRequest request) {
-        Category exists = categoryRepository.existsByName(request.getName());
-        if(exists!=null){
+        boolean exists = categoryRepository.existsByName(request.getName());
+        if(exists){
             throw new AlreadyExistsException("Category already exits with the name: "+request.getName());
         }
         return categoryRepository.save(new Category(request.getName()));
     }
 
     @Override
-    public Category updateCategory(Category category, Long categoryId) {
+    public Category updateCategory(Category category, int categoryId) {
         Category savedCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(()->new ResourceNotFoundException("Category not found with id: "+categoryId));
 
@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public void deleteCategory(Long categoryId) {
+    public void deleteCategory(int categoryId) {
         categoryRepository.findById(categoryId)
                 .ifPresentOrElse(categoryRepository::delete,
                         ()-> {throw new ResourceNotFoundException("Category not found with id: "+categoryId);});

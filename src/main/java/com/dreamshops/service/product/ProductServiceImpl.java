@@ -25,43 +25,45 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Product addProduct(ProductRequest request) {
-        // Check if category is found in DB
-        Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
-                .orElseGet(()->{
-                    Category newCategory = new Category(request.getCategory().getName());
-                    return categoryRepository.save(newCategory);
-                });
+        // check if the category is found in the DB
+        // If Yes, set it as the new product category
+        // If No, the save it as a new category
+        // Then set as the new product category.
+        Category category = categoryRepository.findByName(request.getCategory().getName());
+        if(category==null){
+            category = categoryRepository.save(new Category(request.getCategory().getName()));
+        }
         request.setCategory(category);
         return productRepository.save(createProduct(request, category));
     }
 
-    private Product createProduct(ProductRequest productRequest, Category category){
-
+    private Product createProduct(ProductRequest request, Category category) {
+        System.out.println(request);
         return new Product(
-                productRequest.getName(),
-                productRequest.getBrand(),
-                productRequest.getPrice(),
-                productRequest.getInventory(),
-                productRequest.getDescription(),
-                productRequest.getCategory()
+                request.getName(),
+                request.getBrand(),
+                request.getPrice(),
+                request.getInventory(),
+                request.getDescription(),
+                category
         );
     }
 
     @Override
-    public Product getProductById(Long productId) {
+    public Product getProductById(int productId) {
         return productRepository.findById(productId)
                 .orElseThrow(()->new ResourceNotFoundException("Product not found with id - "+productId));
     }
 
     @Override
-    public void deleteProductById(Long productId) {
+    public void deleteProductById(int productId) {
         productRepository.findById(productId)
                 .ifPresentOrElse(productRepository::delete,
                         ()->{throw new ResourceNotFoundException("Product not found with id - "+productId);});
     }
 
     @Override
-    public Product updateProduct(ProductRequest request, Long productId) {
+    public Product updateProduct(ProductRequest request, int productId) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id - " + productId));
 

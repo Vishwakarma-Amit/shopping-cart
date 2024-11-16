@@ -22,8 +22,8 @@ import lombok.Setter;
 @Entity
 public class Image {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long imageId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int imageId;
     private String fileName;
     private String fileType;
 

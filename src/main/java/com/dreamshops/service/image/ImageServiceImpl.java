@@ -32,13 +32,13 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Image getImageById(Long imageId) {
+    public Image getImageById(int imageId) {
         return imageRepository.findById(imageId)
                 .orElseThrow(()-> new ResourceNotFoundException("Image not found with id: "+imageId));
     }
 
     @Override
-    public void deleteImageById(Long imageId) {
+    public void deleteImageById(int imageId) {
         imageRepository.findById(imageId)
                 .ifPresentOrElse(imageRepository::delete,()->{
                     throw new ResourceNotFoundException("Image not found with id: "+imageId);
@@ -46,7 +46,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<ImageDto> saveImage(List<MultipartFile> files, Long productId) {
+    public List<ImageDto> saveImage(List<MultipartFile> files, int productId) {
         Product product = productService.getProductById(productId);
         List<ImageDto> imageDtos = new ArrayList<>();
         for(MultipartFile file: files){
@@ -79,7 +79,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Image updateImage(MultipartFile file, Long imageId) {
+    public Image updateImage(MultipartFile file, int imageId) {
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(()-> new ResourceNotFoundException("Image not found with id: "+imageId));
         try {

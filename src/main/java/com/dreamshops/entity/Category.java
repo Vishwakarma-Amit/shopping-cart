@@ -2,9 +2,8 @@ package com.dreamshops.entity;
 
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,9 +17,11 @@ import lombok.ToString;
 public class Category {
 
 	@Id
-	private Long categoryId;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int categoryId;
 	private String name;
-	
+
+	@JsonIgnore
 	@OneToMany(mappedBy = "category")
 	private List<Product> product;
 
