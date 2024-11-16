@@ -1,11 +1,16 @@
 package com.dreamshops.service.product;
 
+import com.dreamshops.dto.ImageDto;
+import com.dreamshops.dto.ProductDto;
 import com.dreamshops.entity.Category;
+import com.dreamshops.entity.Image;
 import com.dreamshops.entity.Product;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CategoryRepository;
+import com.dreamshops.repository.ImageRepository;
 import com.dreamshops.repository.ProductRepository;
 import com.dreamshops.request.ProductRequest;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +28,12 @@ public class ProductServiceImpl implements ProductService{
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public Product addProduct(ProductRequest request) {
         // check if the category is found in the DB
@@ -30,10 +41,10 @@ public class ProductServiceImpl implements ProductService{
         // If No, the save it as a new category
         // Then set as the new product category.
         Category category = categoryRepository.findByName(request.getCategory().getName());
+        System.out.println(category);
         if(category==null){
             category = categoryRepository.save(new Category(request.getCategory().getName()));
         }
-        request.setCategory(category);
         return productRepository.save(createProduct(request, category));
     }
 
@@ -50,9 +61,11 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public Product getProductById(int productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(()->new ResourceNotFoundException("Product not found with id - "+productId));
+    public ProductDto getProductById(int productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id - " + productId));
+        System.out.println(product);
+        return convertToDto(product);
     }
 
     @Override
@@ -80,37 +93,55 @@ public class ProductServiceImpl implements ProductService{
 
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        return getConvertedProduct(products);
     }
 
     @Override
-    public List<Product> getProductsByCategory(String categoryName) {
-        return productRepository.findByCategoryName(categoryName);
+    public List<ProductDto> getProductsByCategory(String categoryName) {
+        List<Product> products = productRepository.findByCategoryName(categoryName);
+        return getConvertedProduct(products);
     }
 
     @Override
-    public List<Product> getProductsByBrand(String brand) {
-        return productRepository.findByBrand(brand);
+    public List<ProductDto> getProductsByBrand(String brand) {
+        List<Product> products =  productRepository.findByBrand(brand);
+        return getConvertedProduct(products);
     }
 
     @Override
-    public List<Product> getProductsByCategoryAndBrand(String categoryName, String brand) {
-        return productRepository.findByCategoryNameAndBrand(categoryName, brand);
+    public List<ProductDto> getProductsByCategoryAndBrand(String categoryName, String brand) {
+        List<Product> products =  productRepository.findByCategoryNameAndBrand(categoryName, brand);
+        return getConvertedProduct(products);
     }
 
     @Override
-    public List<Product> getProductsByName(String name) {
-        return productRepository.findByName(name);
+    public List<ProductDto> getProductsByName(String name) {
+        List<Product> products =  productRepository.findByName(name);
+        return getConvertedProduct(products);
     }
 
     @Override
-    public List<Product> getProductsByBrandAndName(String brand, String name) {
-        return productRepository.findByBrandAndName(brand, name);
+    public List<ProductDto> getProductsByBrandAndName(String brand, String name) {
+        List<Product> products =  productRepository.findByBrandAndName(brand, name);
+        return getConvertedProduct(products);
     }
 
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand, name);
+    }
+
+    public List<ProductDto> getConvertedProduct(List<Product> products){
+        return products.stream().map(this::convertToDto).toList();
+    }
+
+    public ProductDto convertToDto(Product product){
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        List<Image> images = imageRepository.findByProductProductId(product.getProductId());
+        List<ImageDto> imageDtos = images.stream().map(image->modelMapper.map(image, ImageDto.class)).toList();
+        productDto.setImages(imageDtos);
+        return productDto;
     }
 }

@@ -1,11 +1,13 @@
 package com.dreamshops.service.image;
 
 import com.dreamshops.dto.ImageDto;
+import com.dreamshops.dto.ProductDto;
 import com.dreamshops.entity.Image;
 import com.dreamshops.entity.Product;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.ImageRepository;
 import com.dreamshops.service.product.ProductService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +27,9 @@ public class ImageServiceImpl implements ImageService {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public Image getImageByUrl(String downloadUrl) {
@@ -47,7 +52,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public List<ImageDto> saveImage(List<MultipartFile> files, int productId) {
-        Product product = productService.getProductById(productId);
+        ProductDto product = productService.getProductById(productId);
         List<ImageDto> imageDtos = new ArrayList<>();
         for(MultipartFile file: files){
             try{
@@ -55,9 +60,9 @@ public class ImageServiceImpl implements ImageService {
                 image.setFileName(file.getOriginalFilename());
                 image.setFileType(file.getContentType());
                 image.setImage(new SerialBlob(file.getBytes()));
-                image.setProduct(product);
+                image.setProduct(modelMapper.map(product, Product.class));
 
-                String buildDownloadUrl = "/api/v1/images/image/download/";
+                String buildDownloadUrl = "/api/v1/images/download/";
 
                 Image savedImage = imageRepository.save(image);
                 savedImage.setDownloadUrl(buildDownloadUrl+savedImage.getImageId());
