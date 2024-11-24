@@ -9,6 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("${api.prefix}/carts")
 @RequiredArgsConstructor
@@ -19,7 +23,7 @@ public class CartController {
     @GetMapping("/{cartId}")
     public ResponseEntity<ApiResponse> getCart(@PathVariable int cartId){
         try{
-            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, cartService.getCart(cartId)), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, cartService.getCartById(cartId)), HttpStatus.OK);
         }catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
@@ -42,7 +46,9 @@ public class CartController {
     @GetMapping("/{cartId}/total-price")
     public ResponseEntity<ApiResponse> getTotalAmount(@PathVariable int cartId){
         try{
-            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, cartService.getTotalPrice(cartId)), HttpStatus.OK);
+            Map<String, BigDecimal> price = new HashMap<>();
+            price.put("totalPrice", cartService.getTotalPrice(cartId));
+            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, price), HttpStatus.OK);
         }catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {

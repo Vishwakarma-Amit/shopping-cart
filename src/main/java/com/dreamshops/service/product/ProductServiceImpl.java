@@ -1,9 +1,7 @@
 package com.dreamshops.service.product;
 
-import com.dreamshops.dto.ImageDto;
 import com.dreamshops.dto.ProductDto;
 import com.dreamshops.entity.Category;
-import com.dreamshops.entity.Image;
 import com.dreamshops.entity.Product;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CategoryRepository;
@@ -11,6 +9,7 @@ import com.dreamshops.repository.ImageRepository;
 import com.dreamshops.repository.ProductRepository;
 import com.dreamshops.request.ProductRequest;
 import com.dreamshops.utility.Message;
+import com.dreamshops.utility.Converter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -32,6 +31,8 @@ public class ProductServiceImpl implements ProductService{
     private final ImageRepository imageRepository;
 
     private final ModelMapper modelMapper;
+
+    private final Converter productConverter;
 
     @Override
     public Product addProduct(ProductRequest request) {
@@ -69,7 +70,7 @@ public class ProductServiceImpl implements ProductService{
 
         log.info("{} - product retrieved from db with product id - {}", methodName, product.getProductId());
 
-        return convertToDto(product);
+        return productConverter.convertToDto(product);
     }
 
     @Override
@@ -112,7 +113,7 @@ public class ProductServiceImpl implements ProductService{
         final String methodName = "getAllProducts";
         List<Product> products = productRepository.findAll();
         log.info("{} - All product list fetched!", methodName);
-        return getConvertedProduct(products);
+        return productConverter.getConvertedProduct(products);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class ProductServiceImpl implements ProductService{
         final String methodName = "getProductsByCategory";
         List<Product> products = productRepository.findByCategoryName(categoryName);
         log.info("{} - product list by category fetched, category - {}", methodName, categoryName);
-        return getConvertedProduct(products);
+        return productConverter.getConvertedProduct(products);
     }
 
     @Override
@@ -128,7 +129,7 @@ public class ProductServiceImpl implements ProductService{
         final String methodName = "getProductsByBrand";
         List<Product> products =  productRepository.findByBrand(brand);
         log.info("{} - product list by brand fetched, brand - {}", methodName, brand);
-        return getConvertedProduct(products);
+        return productConverter.getConvertedProduct(products);
     }
 
     @Override
@@ -136,7 +137,7 @@ public class ProductServiceImpl implements ProductService{
         final String methodName = "getProductsByCategoryAndBrand";
         List<Product> products =  productRepository.findByCategoryNameAndBrand(categoryName, brand);
         log.info("{} - product list, brand - {}, category - {}", methodName, brand, categoryName);
-        return getConvertedProduct(products);
+        return productConverter.getConvertedProduct(products);
     }
 
     @Override
@@ -144,7 +145,7 @@ public class ProductServiceImpl implements ProductService{
         final String methodName = "getProductsByName";
         List<Product> products =  productRepository.findByName(name);
         log.info("{} - product list by name - {}", methodName, name);
-        return getConvertedProduct(products);
+        return productConverter.getConvertedProduct(products);
     }
 
     @Override
@@ -152,7 +153,7 @@ public class ProductServiceImpl implements ProductService{
         final String methodName = "getProductsByBrandAndName";
         List<Product> products =  productRepository.findByBrandAndName(brand, name);
         log.info("{} - product list by brand and name, brand - {}, name - {}", methodName, brand, name);
-        return getConvertedProduct(products);
+        return productConverter.getConvertedProduct(products);
     }
 
     @Override
@@ -163,15 +164,4 @@ public class ProductServiceImpl implements ProductService{
         return count;
     }
 
-    private List<ProductDto> getConvertedProduct(List<Product> products){
-        return products.stream().map(this::convertToDto).toList();
-    }
-
-    private ProductDto convertToDto(Product product){
-        ProductDto productDto = modelMapper.map(product, ProductDto.class);
-        List<Image> images = imageRepository.findByProductProductId(product.getProductId());
-        List<ImageDto> imageDtos = images.stream().map(image->modelMapper.map(image, ImageDto.class)).toList();
-        productDto.setImages(imageDtos);
-        return productDto;
-    }
 }

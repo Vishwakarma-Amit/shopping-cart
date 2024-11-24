@@ -1,32 +1,31 @@
 package com.dreamshops.service.cart;
 
+import com.dreamshops.dto.CartItemDto;
 import com.dreamshops.entity.Cart;
 import com.dreamshops.entity.CartItem;
 import com.dreamshops.entity.Product;
 import com.dreamshops.exception.ResourceNotFoundException;
-import com.dreamshops.repository.CartItemRepository;
 import com.dreamshops.repository.CartRepository;
 import com.dreamshops.repository.ProductRepository;
 import com.dreamshops.utility.Message;
+import com.dreamshops.utility.Converter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CartItemServiceImpl implements  CartItemService{
 
-    private final CartItemRepository cartItemRepository;
-
     private final ProductRepository productRepository;
 
     private final CartRepository cartRepository;
 
     private final CartService cartService;
+
+    private final Converter converter;
 
     @Override
     @Transactional
@@ -37,6 +36,8 @@ public class CartItemServiceImpl implements  CartItemService{
         Cart cart = cartService.getCart(cartId);
         log.info("{} - cart found, id - {}", methodName, cart.getCartId());
 
+
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(()->new ResourceNotFoundException(Message.PRODUCT_NOT_FOUND+productId));
         log.info("{} - product found, productId - {}", methodName, product.getProductId());
@@ -45,6 +46,7 @@ public class CartItemServiceImpl implements  CartItemService{
                 .stream()
                 .filter(item -> item.getProduct().getProductId()==productId)
                 .findFirst().orElse(new CartItem());
+
         if (cartItem.getCartItemId() == 0) {
             cartItem.setCart(cart);
             cartItem.setProduct(product);
@@ -62,8 +64,6 @@ public class CartItemServiceImpl implements  CartItemService{
 
         cartRepository.save(cart);
         log.info("{} - cart saved ", methodName);
-        cartItemRepository.save(cartItem);
-        log.info("{} - cartItem saved ", methodName);
     }
 
     @Override
@@ -95,20 +95,20 @@ public class CartItemServiceImpl implements  CartItemService{
                     item.setTotalPrice();
                 });
         log.info("{} - cartItem found from cart by product id - {}", methodName, productId);
-        BigDecimal totalAmount = cart.getTotalAmount();
-        cart.setTotalAmount(totalAmount);
+        cart.updateTotalAmount();
         cartRepository.save(cart);
         log.info("{} - cart details updated!", methodName);
     }
 
     @Override
-    public CartItem getCartItem(int cartId, int productId){
+    public CartItemDto getCartItem(int cartId, int productId){
         final String methodName = "getCartItem";
         Cart cart = cartService.getCart(cartId);
         CartItem cartItem = cart.getCartItems().stream()
                 .filter(item-> item.getProduct().getProductId()==productId)
                 .findFirst().orElseThrow(()->new ResourceNotFoundException(Message.PRODUCT_NOT_FOUND+productId));
         log.info("{} - cartItem retrieved from cart by product id - {}", methodName, productId);
-        return cartItem;
+        return converter.convertToDto(cartItem);
     }
+
 }

@@ -1,6 +1,6 @@
 package com.dreamshops.service.cart;
 
-import com.dreamshops.entity.CartItem;
+import com.dreamshops.dto.CartItemDto;
 
 public interface CartItemService {
 
@@ -10,5 +10,5 @@ public interface CartItemService {
 
     void updateCartItemQuantity(int cartId, int productId, int quantity);
 
-    CartItem getCartItem(int cartId, int productId);
+    CartItemDto getCartItem(int cartId, int productId);
 }
