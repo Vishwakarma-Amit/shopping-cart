@@ -10,29 +10,26 @@ import com.dreamshops.repository.CategoryRepository;
 import com.dreamshops.repository.ImageRepository;
 import com.dreamshops.repository.ProductRepository;
 import com.dreamshops.request.ProductRequest;
+import com.dreamshops.utility.Message;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService{
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    @Autowired
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public Product addProduct(ProductRequest request) {
@@ -41,7 +38,6 @@ public class ProductServiceImpl implements ProductService{
         // If No, the save it as a new category
         // Then set as the new product category.
         Category category = categoryRepository.findByName(request.getCategory().getName());
-        System.out.println(category);
         if(category==null){
             category = categoryRepository.save(new Category(request.getCategory().getName()));
         }
@@ -49,7 +45,6 @@ public class ProductServiceImpl implements ProductService{
     }
 
     private Product createProduct(ProductRequest request, Category category) {
-        System.out.println(request);
         return new Product(
                 request.getName(),
                 request.getBrand(),
@@ -64,7 +59,6 @@ public class ProductServiceImpl implements ProductService{
     public ProductDto getProductById(int productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id - " + productId));
-        System.out.println(product);
         return convertToDto(product);
     }
 
@@ -72,13 +66,13 @@ public class ProductServiceImpl implements ProductService{
     public void deleteProductById(int productId) {
         productRepository.findById(productId)
                 .ifPresentOrElse(productRepository::delete,
-                        ()->{throw new ResourceNotFoundException("Product not found with id - "+productId);});
+                        ()->{throw new ResourceNotFoundException(Message.PRODUCT_NOT_FOUND +productId);});
     }
 
     @Override
     public Product updateProduct(ProductRequest request, int productId) {
         Product existingProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id - " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException(Message.PRODUCT_NOT_FOUND + productId));
 
         existingProduct.setName(request.getName()!=null && request.getName().isEmpty() ? request.getName() : existingProduct.getName());
         existingProduct.setBrand(request.getBrand()!=null && request.getBrand().isEmpty()? request.getBrand() : existingProduct.getBrand());

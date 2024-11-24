@@ -1,13 +1,12 @@
 package com.dreamshops.controller;
 
 import com.dreamshops.dto.ProductDto;
-import com.dreamshops.entity.Product;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.request.ProductRequest;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.product.ProductService;
 import com.dreamshops.utility.Message;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/products")
+@RequiredArgsConstructor
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
     @GetMapping
     public ResponseEntity<ApiResponse> getAllProducts() {
@@ -78,6 +77,7 @@ public class ProductController {
     @DeleteMapping("/{productId}")
     public ResponseEntity<ApiResponse> deleteProductById(@PathVariable int productId) {
         try {
+            productService.deleteProductById(productId);
             return new ResponseEntity<>(new ApiResponse(Message.DELETE_SUCCESSFUL, null), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.DELETE_FAILED, ex.getMessage()), HttpStatus.NOT_FOUND);

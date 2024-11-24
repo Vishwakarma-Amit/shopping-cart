@@ -4,17 +4,17 @@ import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.cart.CartService;
 import com.dreamshops.utility.Message;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.prefix}/carts")
+@RequiredArgsConstructor
 public class CartController {
 
-    @Autowired
-    private CartService cartService;
+    private final CartService cartService;
 
     @GetMapping("/{cartId}")
     public ResponseEntity<ApiResponse> getCart(@PathVariable int cartId){

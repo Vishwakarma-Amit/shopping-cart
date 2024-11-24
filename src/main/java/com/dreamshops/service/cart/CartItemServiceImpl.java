@@ -7,38 +7,32 @@ import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CartItemRepository;
 import com.dreamshops.repository.CartRepository;
 import com.dreamshops.repository.ProductRepository;
-import com.dreamshops.service.product.ProductService;
+import com.dreamshops.utility.Message;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
+@RequiredArgsConstructor
 public class CartItemServiceImpl implements  CartItemService{
 
-    @Autowired
-    private CartItemRepository cartItemRepository;
+    private final CartItemRepository cartItemRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private CartRepository cartRepository;
+    private final CartRepository cartRepository;
 
-    @Autowired
-    private CartService cartService;
-
-    @Autowired
-    private ProductService productService;
+    private final CartService cartService;
 
     @Override
     @Transactional
-    public void AddItemToCart(int cartId, int productId, int quantity) {
+    public void createCartItem(int cartId, int productId, int quantity) {
 
         Cart cart = cartService.getCart(cartId);
         Product product = productRepository.findById(productId)
-                .orElseThrow(()->new ResourceNotFoundException("Product not found with id: "+productId));
+                .orElseThrow(()->new ResourceNotFoundException(Message.PRODUCT_NOT_FOUND+productId));
         CartItem cartItem = cart.getCartItems()
                 .stream()
                 .filter(item -> item.getProduct().getProductId()==productId)
@@ -63,7 +57,7 @@ public class CartItemServiceImpl implements  CartItemService{
         Cart cart = cartService.getCart(cartId);
         CartItem cartItem = cart.getCartItems().stream()
                 .filter(item-> item.getProduct().getProductId()==productId)
-                .findFirst().orElseThrow(()->new ResourceNotFoundException("Product not found with id: "+productId));
+                .findFirst().orElseThrow(()->new ResourceNotFoundException(Message.PRODUCT_NOT_FOUND+productId));
         cart.removeItem(cartItem);
         cartRepository.save(cart);
     }
@@ -89,6 +83,6 @@ public class CartItemServiceImpl implements  CartItemService{
         Cart cart = cartService.getCart(cartId);
         return cart.getCartItems().stream()
                 .filter(item-> item.getProduct().getProductId()==productId)
-                .findFirst().orElseThrow(()->new ResourceNotFoundException("Product not found with id: "+productId));
+                .findFirst().orElseThrow(()->new ResourceNotFoundException(Message.PRODUCT_NOT_FOUND+productId));
     }
 }

@@ -7,29 +7,27 @@ import com.dreamshops.entity.Product;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.ImageRepository;
 import com.dreamshops.service.product.ProductService;
+import com.dreamshops.utility.Message;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
 
-    @Autowired
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public Image getImageByUrl(String downloadUrl) {
@@ -39,19 +37,19 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Image getImageById(int imageId) {
         return imageRepository.findById(imageId)
-                .orElseThrow(()-> new ResourceNotFoundException("Image not found with id: "+imageId));
+                .orElseThrow(()-> new ResourceNotFoundException(Message.IMAGE_NOT_FOUND +imageId));
     }
 
     @Override
     public void deleteImageById(int imageId) {
         imageRepository.findById(imageId)
                 .ifPresentOrElse(imageRepository::delete,()->{
-                    throw new ResourceNotFoundException("Image not found with id: "+imageId);
+                    throw new ResourceNotFoundException(Message.IMAGE_NOT_FOUND +imageId);
                 });
     }
 
     @Override
-    public List<ImageDto> saveImage(List<MultipartFile> files, int productId) {
+    public List<ImageDto> saveImage(List<MultipartFile> files, int productId) throws IOException, SQLException {
         ProductDto product = productService.getProductById(productId);
         List<ImageDto> imageDtos = new ArrayList<>();
         for(MultipartFile file: files){
@@ -59,7 +57,7 @@ public class ImageServiceImpl implements ImageService {
                 Image image = new Image();
                 image.setFileName(file.getOriginalFilename());
                 image.setFileType(file.getContentType());
-                image.setImage(new SerialBlob(file.getBytes()));
+                image.setImageFile(new SerialBlob(file.getBytes()));
                 image.setProduct(modelMapper.map(product, Product.class));
 
                 String buildDownloadUrl = "/api/v1/images/download/";
@@ -76,24 +74,28 @@ public class ImageServiceImpl implements ImageService {
 
                 imageDtos.add(imageDto);
 
-            } catch (IOException | SQLException e) {
-                throw new RuntimeException(e.getMessage());
+            } catch (IOException e) {
+                throw new IOException(e.getMessage());
+            } catch (SQLException ex){
+                throw new SQLException(ex.getMessage());
             }
         }
         return imageDtos;
     }
 
     @Override
-    public Image updateImage(MultipartFile file, int imageId) {
+    public void updateImage(MultipartFile file, int imageId) throws IOException, SQLException{
         Image image = imageRepository.findById(imageId)
-                .orElseThrow(()-> new ResourceNotFoundException("Image not found with id: "+imageId));
+                .orElseThrow(()-> new ResourceNotFoundException(Message.IMAGE_NOT_FOUND+imageId));
         try {
             image.setFileName(file.getOriginalFilename());
             image.setFileType(file.getContentType());
-            image.setImage(new SerialBlob(file.getBytes()));
-            return imageRepository.save(image);
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e.getMessage());
+            image.setImageFile(new SerialBlob(file.getBytes()));
+            imageRepository.save(image);
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        } catch (SQLException ex){
+            throw new SQLException(ex.getMessage());
         }
     }
 }

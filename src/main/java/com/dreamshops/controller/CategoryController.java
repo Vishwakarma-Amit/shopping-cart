@@ -7,17 +7,17 @@ import com.dreamshops.request.CategoryRequest;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.category.CategoryService;
 import com.dreamshops.utility.Message;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.prefix}/categories")
+@RequiredArgsConstructor
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @GetMapping
     public ResponseEntity<ApiResponse> getAllCategories(){

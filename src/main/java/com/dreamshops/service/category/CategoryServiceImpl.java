@@ -5,21 +5,22 @@ import com.dreamshops.exception.AlreadyExistsException;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CategoryRepository;
 import com.dreamshops.request.CategoryRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dreamshops.utility.Message;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public Category getCategoryById(int categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(()->new ResourceNotFoundException("Category not found with id: "+categoryId));
+                .orElseThrow(()->new ResourceNotFoundException(Message.CATEGORY_NOT_FOUND +categoryId));
     }
 
     @Override
@@ -36,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService{
     public Category addCategory(CategoryRequest request) {
         boolean exists = categoryRepository.existsByName(request.getName());
         if(exists){
-            throw new AlreadyExistsException("Category already exits with the name: "+request.getName());
+            throw new AlreadyExistsException(Message.CATEGORY_ALREADY_EXISTS+request.getName());
         }
         return categoryRepository.save(new Category(request.getName()));
     }
@@ -44,7 +45,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public Category updateCategory(Category category, int categoryId) {
         Category savedCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(()->new ResourceNotFoundException("Category not found with id: "+categoryId));
+                .orElseThrow(()->new ResourceNotFoundException(Message.CATEGORY_NOT_FOUND+categoryId));
 
         savedCategory.setName(category.getName()!=null && category.getName().isEmpty() ? category.getName() : savedCategory.getName());
 
@@ -55,6 +56,6 @@ public class CategoryServiceImpl implements CategoryService{
     public void deleteCategory(int categoryId) {
         categoryRepository.findById(categoryId)
                 .ifPresentOrElse(categoryRepository::delete,
-                        ()-> {throw new ResourceNotFoundException("Category not found with id: "+categoryId);});
+                        ()-> {throw new ResourceNotFoundException(Message.CATEGORY_NOT_FOUND+categoryId);});
     }
 }

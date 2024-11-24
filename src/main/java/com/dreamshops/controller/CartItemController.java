@@ -4,19 +4,21 @@ import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.cart.CartItemService;
 import com.dreamshops.utility.Message;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.prefix}/cartItems")
+@RequiredArgsConstructor
 public class CartItemController {
 
-    @Autowired
-    private CartItemService cartItemService;
+    private final CartItemService cartItemService;
 
     @GetMapping("/{cartId}/{productId}")
+    @Operation(description = "Get cart item by cart id and product id", summary = "Get cart item" )
     public ResponseEntity<ApiResponse> getCartItem(@PathVariable int cartId, @PathVariable int productId){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, cartItemService.getCartItem(cartId, productId)), HttpStatus.OK);
@@ -28,9 +30,9 @@ public class CartItemController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> AddItemToCart(@RequestParam(required = false) int cartId, @RequestParam int productId, @RequestParam int quantity) {
+    public ResponseEntity<ApiResponse> createCartItem(@RequestParam int cartId, @RequestParam int productId, @RequestParam int quantity) {
         try{
-            cartItemService.AddItemToCart(cartId, productId, quantity);
+            cartItemService.createCartItem(cartId, productId, quantity);
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item added successfully!" ), HttpStatus.OK);
         }catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -40,7 +42,7 @@ public class CartItemController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ApiResponse> removeItemToCart(@RequestParam(required = false) int cartId, @RequestParam int productId) {
+    public ResponseEntity<ApiResponse> removeItemToCart(@RequestParam int cartId, @RequestParam int productId) {
         try{
             cartItemService.removeItemFromCart(cartId, productId);
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item deleted successfully!" ), HttpStatus.OK);
@@ -52,7 +54,7 @@ public class CartItemController {
     }
 
     @PutMapping("/delete")
-    public ResponseEntity<ApiResponse> updateItemQuantity(@RequestParam(required = false) int cartId, @RequestParam int productId,  @RequestParam int quantity) {
+    public ResponseEntity<ApiResponse> updateItemQuantity(@RequestParam int cartId, @RequestParam int productId,  @RequestParam int quantity) {
         try{
             cartItemService.updateCartItemQuantity(cartId, productId, quantity);
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item quantity updated successfully!" ), HttpStatus.OK);
