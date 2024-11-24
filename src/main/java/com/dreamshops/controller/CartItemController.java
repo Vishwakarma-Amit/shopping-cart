@@ -30,6 +30,7 @@ public class CartItemController {
     }
 
     @PostMapping("/add")
+    @Operation(summary = "Add cart item", description = "add product item into cart by product id and quantity" )
     public ResponseEntity<ApiResponse> createCartItem(@RequestParam int cartId, @RequestParam int productId, @RequestParam int quantity) {
         try{
             cartItemService.createCartItem(cartId, productId, quantity);
@@ -42,6 +43,7 @@ public class CartItemController {
     }
 
     @DeleteMapping("/delete")
+    @Operation(summary = "Delete cart item", description = "delete product item from cart by product id and cart id" )
     public ResponseEntity<ApiResponse> removeItemToCart(@RequestParam int cartId, @RequestParam int productId) {
         try{
             cartItemService.removeItemFromCart(cartId, productId);
@@ -53,7 +55,8 @@ public class CartItemController {
         }
     }
 
-    @PutMapping("/delete")
+    @PutMapping("/update")
+    @Operation(summary = "update cart item", description = "update product item into cart by product id and cart id" )
     public ResponseEntity<ApiResponse> updateItemQuantity(@RequestParam int cartId, @RequestParam int productId,  @RequestParam int quantity) {
         try{
             cartItemService.updateCartItemQuantity(cartId, productId, quantity);

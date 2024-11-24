@@ -49,33 +49,29 @@ public class ImageController {
     @PutMapping("/update/{imageId}")
     public ResponseEntity<ApiResponse> updateImage(@PathVariable int imageId, @RequestBody MultipartFile file) {
         try {
-            Image image = imageService.getImageById(imageId);
-            if(image!=null ){
-                imageService.updateImage(file, imageId);
-                return new ResponseEntity<>(new ApiResponse(Message.UPDATE_SUCCESSFUL, null), HttpStatus.OK);
-            }
+            imageService.updateImage(file, imageId);
+            return new ResponseEntity<>(new ApiResponse(Message.UPDATE_SUCCESSFUL, null), HttpStatus.OK);
         } catch ( SQLException e) {
             return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
             return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED, e.getMessage()), HttpStatus.BAD_REQUEST);
-        }catch (ResourceNotFoundException ex){
+        } catch (ResourceNotFoundException ex){
             return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED, ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex){
+            return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED, null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(new ApiResponse(Message.UPDATE_FAILED, null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @DeleteMapping("/delete/{imageId}")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable int imageId) {
         try {
-            Image image = imageService.getImageById(imageId);
-            if(image!=null ){
-                imageService.deleteImageById(imageId);
-                return new ResponseEntity<>(new ApiResponse(Message.DELETE_SUCCESSFUL, null), HttpStatus.OK);
-            }
+            imageService.deleteImageById(imageId);
+            return new ResponseEntity<>(new ApiResponse(Message.DELETE_SUCCESSFUL, null), HttpStatus.OK);
         } catch (ResourceNotFoundException  e) {
             return new ResponseEntity<>(new ApiResponse(Message.DELETE_FAILED, e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex){
+            return new ResponseEntity<>(new ApiResponse(Message.DELETE_FAILED, null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(new ApiResponse(Message.DELETE_FAILED, null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
