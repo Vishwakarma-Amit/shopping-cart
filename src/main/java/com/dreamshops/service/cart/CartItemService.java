@@ -4,7 +4,7 @@ import com.dreamshops.entity.CartItem;
 
 public interface CartItemService {
 
-    void AddItemToCart(int cartId, int productId, int quantity);
+    void createCartItem(int cartId, int productId, int quantity);
 
     void removeItemFromCart(int cartId, int productId);
 

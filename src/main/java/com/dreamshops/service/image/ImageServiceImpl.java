@@ -7,29 +7,29 @@ import com.dreamshops.entity.Product;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.ImageRepository;
 import com.dreamshops.service.product.ProductService;
+import com.dreamshops.utility.Message;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
 
-    @Autowired
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public Image getImageByUrl(String downloadUrl) {
@@ -38,20 +38,27 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image getImageById(int imageId) {
-        return imageRepository.findById(imageId)
-                .orElseThrow(()-> new ResourceNotFoundException("Image not found with id: "+imageId));
+        final String methodName = "getImageById";
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new ResourceNotFoundException(Message.IMAGE_NOT_FOUND + imageId));
+        log.info("{} - Image retrieved by id - {}", methodName, imageId);
+        return image;
     }
 
     @Override
     public void deleteImageById(int imageId) {
+        final String methodName = "deleteImageById";
         imageRepository.findById(imageId)
                 .ifPresentOrElse(imageRepository::delete,()->{
-                    throw new ResourceNotFoundException("Image not found with id: "+imageId);
+                    throw new ResourceNotFoundException(Message.IMAGE_NOT_FOUND +imageId);
                 });
+        log.info("{} - Image with id - {} deleted!", methodName, imageId);
     }
 
     @Override
-    public List<ImageDto> saveImage(List<MultipartFile> files, int productId) {
+    public List<ImageDto> saveImage(List<MultipartFile> files, int productId) throws IOException, SQLException {
+        final String methodName = "saveImage";
+        log.info("{} - execution starts", methodName);
         ProductDto product = productService.getProductById(productId);
         List<ImageDto> imageDtos = new ArrayList<>();
         for(MultipartFile file: files){
@@ -59,14 +66,18 @@ public class ImageServiceImpl implements ImageService {
                 Image image = new Image();
                 image.setFileName(file.getOriginalFilename());
                 image.setFileType(file.getContentType());
-                image.setImage(new SerialBlob(file.getBytes()));
+                image.setImageFile(new SerialBlob(file.getBytes()));
                 image.setProduct(modelMapper.map(product, Product.class));
+                log.info("{} - created image", methodName);
 
                 String buildDownloadUrl = "/api/v1/images/download/";
 
                 Image savedImage = imageRepository.save(image);
+                log.info("{} - Image persisted into db", methodName);
+
                 savedImage.setDownloadUrl(buildDownloadUrl+savedImage.getImageId());
-                imageRepository.save(image);
+                imageRepository.save(savedImage);
+                log.info("{} - Image download url - {}", methodName, buildDownloadUrl);
 
                 ImageDto imageDto = new ImageDto();
                 imageDto.setImageId(savedImage.getImageId());
@@ -76,24 +87,32 @@ public class ImageServiceImpl implements ImageService {
 
                 imageDtos.add(imageDto);
 
-            } catch (IOException | SQLException e) {
-                throw new RuntimeException(e.getMessage());
+            } catch (IOException e) {
+                throw new IOException(e.getMessage());
+            } catch (SQLException ex){
+                throw new SQLException(ex.getMessage());
             }
         }
+        log.info("{} - Execution finished!", methodName);
         return imageDtos;
     }
 
     @Override
-    public Image updateImage(MultipartFile file, int imageId) {
+    public void updateImage(MultipartFile file, int imageId) throws IOException, SQLException{
+        final String methodName = "updateImage";
         Image image = imageRepository.findById(imageId)
-                .orElseThrow(()-> new ResourceNotFoundException("Image not found with id: "+imageId));
+                .orElseThrow(()-> new ResourceNotFoundException(Message.IMAGE_NOT_FOUND+imageId));
+        log.info("{} - image with id - {} retrieved", methodName, imageId);
         try {
             image.setFileName(file.getOriginalFilename());
             image.setFileType(file.getContentType());
-            image.setImage(new SerialBlob(file.getBytes()));
-            return imageRepository.save(image);
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e.getMessage());
+            image.setImageFile(new SerialBlob(file.getBytes()));
+            imageRepository.save(image);
+            log.info("{} - image updated successfully!", methodName);
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        } catch (SQLException ex){
+            throw new SQLException(ex.getMessage());
         }
     }
 }

@@ -1,46 +1,60 @@
 package com.dreamshops.service.cart;
 
 import com.dreamshops.entity.Cart;
-import com.dreamshops.entity.CartItem;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CartItemRepository;
 import com.dreamshops.repository.CartRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dreamshops.utility.Message;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class CartServiceImpl implements CartService{
 
-    @Autowired
-    private CartRepository cartRepository;
+    private final CartRepository cartRepository;
 
-    @Autowired
-    private CartItemRepository cartItemRepository;
+    private final CartItemRepository cartItemRepository;
 
     @Override
     public Cart getCart(int cartId) {
+        final String methodName = "getCart";
+
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(()->new ResourceNotFoundException("Cart not found with cart id: "+cartId));
+                .orElseThrow(()->new ResourceNotFoundException(Message.CART_NOT_FOUND +cartId));
+        log.info("{} - cart retrieved by id - {}", methodName, cartId);
         BigDecimal totalAmount = cart.getTotalAmount();
         cart.setTotalAmount(totalAmount);
-        return cartRepository.save(cart);
+        cartRepository.save(cart);
+        log.info("{} - cart saved successfully!", methodName);
+        return cart;
     }
 
     @Override
     public void clearCart(int cartId) {
+        final String methodName = "clearCart";
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(()->new ResourceNotFoundException("Cart not found with cart id: "+cartId));
+                .orElseThrow(()->new ResourceNotFoundException(Message.CART_NOT_FOUND+cartId));
+        log.info("{} - cart found with id - {}", methodName, cartId);
+
         cartItemRepository.deleteAllByCartCartId(cartId);
         cart.getCartItems().clear();
+        log.info("{} - removed all the cart item from cart with id - {}", methodName, cartId);
+
         cartRepository.deleteById(cartId);
+        log.info("{} - removed cart with id - {} ", methodName, cartId);
     }
 
     @Override
     public BigDecimal getTotalPrice(int cartId) {
+        final String methodName = "getTotalPrice";
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(()->new ResourceNotFoundException("Cart not found with cart id: "+cartId));
+                .orElseThrow(()->new ResourceNotFoundException(Message.CART_NOT_FOUND+cartId));
+        log.info("{} - retrieved cart with id - {}", methodName, cartId);
         return cart.getTotalAmount();
     }
 }
