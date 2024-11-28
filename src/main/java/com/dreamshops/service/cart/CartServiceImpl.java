@@ -1,11 +1,9 @@
 package com.dreamshops.service.cart;
 
-import com.dreamshops.dto.CartDto;
 import com.dreamshops.entity.Cart;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CartItemRepository;
 import com.dreamshops.repository.CartRepository;
-import com.dreamshops.utility.Converter;
 import com.dreamshops.utility.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,19 +19,6 @@ public class CartServiceImpl implements CartService{
     private final CartRepository cartRepository;
 
     private final CartItemRepository cartItemRepository;
-
-    private final Converter converter;
-
-    @Override
-    public int initializeCart(){
-        final String methodName = "initializeCart";
-        Cart cart = new Cart();
-        log.info("{} - cart created", methodName);
-
-        Cart savedCart = cartRepository.save(cart);
-        log.info("{} - cart initialized, cart id - {}", methodName, savedCart.getCartId());
-        return savedCart.getCartId();
-    }
 
     @Override
     public Cart getCart(int cartId) {
@@ -71,16 +56,5 @@ public class CartServiceImpl implements CartService{
                 .orElseThrow(()->new ResourceNotFoundException(Message.CART_NOT_FOUND+cartId));
         log.info("{} - retrieved cart with id - {}", methodName, cartId);
         return cart.getTotalAmount();
-    }
-
-    @Override
-    public CartDto getCartById(int cartId) {
-        final String methodName = "getCartById";
-
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(()->new ResourceNotFoundException(Message.CART_NOT_FOUND +cartId));
-        log.info("{} - cart found by cart id - {}", methodName, cartId);
-
-        return converter.convertToDto(cart);
     }
 }
