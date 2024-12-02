@@ -53,7 +53,7 @@ public class CategoryController {
     @PostMapping("/create")
     public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryRequest categoryRequest){
         try{
-            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS,categoryService.addCategory(categoryRequest)), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS,categoryService.addCategory(categoryRequest)), HttpStatus.CREATED);
         }catch (AlreadyExistsException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.CONFLICT);
         }catch (Exception ex){

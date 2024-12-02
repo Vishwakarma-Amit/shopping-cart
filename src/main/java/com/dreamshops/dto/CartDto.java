@@ -9,5 +9,5 @@ import java.util.List;
 public class CartDto {
     private int cartId;
     private BigDecimal totalAmount = BigDecimal.ZERO;
-    private List<CartItemDto> cartItems;
+    private List<CartItemDto> items;
 }

@@ -42,7 +42,7 @@ public class CartItemController {
                 cartId = cartService.initializeCart();
             }
             cartItemService.createCartItem(cartId, cartItemRequest.getProductId(), cartItemRequest.getQuantity());
-            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item added successfully!" ), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item added successfully!" ), HttpStatus.CREATED);
         }catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
@@ -68,7 +68,7 @@ public class CartItemController {
     public ResponseEntity<ApiResponse> updateItemQuantity(@RequestBody CartItemRequest cartItemRequest) {
         try{
             cartItemService.updateCartItemQuantity(cartItemRequest.getCartId(), cartItemRequest.getProductId(), cartItemRequest.getQuantity());
-            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item quantity updated successfully!" ), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(Message.UPDATE_SUCCESSFUL, "Item quantity updated successfully!" ), HttpStatus.OK);
         }catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {

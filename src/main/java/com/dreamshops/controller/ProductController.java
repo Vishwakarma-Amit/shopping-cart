@@ -44,7 +44,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductRequest productRequest){
         try{
-            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, productService.addProduct(productRequest)), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, productService.addProduct(productRequest)), HttpStatus.CREATED);
         }catch (Exception ex){
             return new ResponseEntity<>(new ApiResponse(Message.FAILED, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

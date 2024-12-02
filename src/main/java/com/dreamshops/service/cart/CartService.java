@@ -16,4 +16,6 @@ public interface CartService {
     BigDecimal getTotalPrice(int cartId);
 
     CartDto getCartById(int cartId);
+
+    Cart getCartByUserId(int userId);
 }
