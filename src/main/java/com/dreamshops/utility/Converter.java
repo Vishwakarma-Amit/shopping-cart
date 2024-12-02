@@ -1,13 +1,7 @@
 package com.dreamshops.utility;
 
-import com.dreamshops.dto.CartDto;
-import com.dreamshops.dto.CartItemDto;
-import com.dreamshops.dto.ImageDto;
-import com.dreamshops.dto.ProductDto;
-import com.dreamshops.entity.Cart;
-import com.dreamshops.entity.CartItem;
-import com.dreamshops.entity.Image;
-import com.dreamshops.entity.Product;
+import com.dreamshops.dto.*;
+import com.dreamshops.entity.*;
 import com.dreamshops.repository.CartItemRepository;
 import com.dreamshops.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +50,8 @@ public class Converter {
             CartItemDto convertToDto = convertToDto(cartItem);
             cartItemDtos.add(convertToDto);
         }
-        cartDto.setCartItems(cartItemDtos);
+        cartDto.setItems(cartItemDtos);
         return cartDto;
     }
+
 }

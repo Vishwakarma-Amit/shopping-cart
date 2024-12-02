@@ -20,11 +20,8 @@ import org.springframework.stereotype.Service;
 public class CartItemServiceImpl implements  CartItemService{
 
     private final ProductRepository productRepository;
-
     private final CartRepository cartRepository;
-
     private final CartService cartService;
-
     private final Converter converter;
 
     @Override

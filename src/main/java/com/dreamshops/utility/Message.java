@@ -2,6 +2,8 @@ package com.dreamshops.utility;
 
 public class Message {
 
+
+
     private Message(){
     }
 
@@ -20,4 +22,8 @@ public class Message {
     public static final String CATEGORY_ALREADY_EXISTS = "Category already exits with the name - ";
     public static final String CART_NOT_FOUND = "Cart not found with cart id - ";
     public static final String IMAGE_NOT_FOUND = "Image not found with id - ";
+    public static final String ORDER_NOT_FOUND = "Order not found with id -";
+    public static final String USER_NOT_FOUND = "User not found with id -";
+    public static final String USER_ALREADY_EXISTS = "User already exists";
+    public static final String SOMETHING_WENT_WRONG = "Something went wrong!";
 }

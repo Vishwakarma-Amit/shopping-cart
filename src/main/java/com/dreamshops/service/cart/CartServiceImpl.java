@@ -10,6 +10,7 @@ import com.dreamshops.utility.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -49,6 +50,7 @@ public class CartServiceImpl implements CartService{
         return cart;
     }
 
+    @Transactional
     @Override
     public void clearCart(int cartId) {
         final String methodName = "clearCart";
@@ -82,5 +84,15 @@ public class CartServiceImpl implements CartService{
         log.info("{} - cart found by cart id - {}", methodName, cartId);
 
         return converter.convertToDto(cart);
+    }
+
+    @Override
+    public Cart getCartByUserId(int userId) {
+        final String methodName = "getCartByUserId";
+        log.info("{} - invoked with user id - {}",methodName, userId);
+        Cart cart = cartRepository.findByUserUserId(userId)
+                .orElseThrow(()->new ResourceNotFoundException(Message.USER_NOT_FOUND+userId));
+        log.info("{} - cart retrieved by user id - {}",methodName, userId);
+        return cart;
     }
 }
