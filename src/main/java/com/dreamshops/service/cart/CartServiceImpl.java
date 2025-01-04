@@ -2,9 +2,11 @@ package com.dreamshops.service.cart;
 
 import com.dreamshops.dto.CartDto;
 import com.dreamshops.entity.Cart;
+import com.dreamshops.entity.User;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CartItemRepository;
 import com.dreamshops.repository.CartRepository;
+import com.dreamshops.repository.UserRepository;
 import com.dreamshops.utility.Converter;
 import com.dreamshops.utility.Message;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +22,18 @@ import java.math.BigDecimal;
 public class CartServiceImpl implements CartService{
 
     private final CartRepository cartRepository;
-
     private final CartItemRepository cartItemRepository;
+    private final UserRepository userRepository;
 
     private final Converter converter;
 
     @Override
-    public int initializeCart(){
+    public int initializeCart(int userId){
         final String methodName = "initializeCart";
         Cart cart = new Cart();
+        User saveUser = userRepository.findById(userId)
+                .orElseThrow(()->new ResourceNotFoundException(Message.USER_NOT_FOUND+userId));
+        cart.setUser(saveUser);
         log.info("{} - cart created", methodName);
 
         Cart savedCart = cartRepository.save(cart);

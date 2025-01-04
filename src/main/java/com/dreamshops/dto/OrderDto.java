@@ -3,6 +3,7 @@ package com.dreamshops.dto;
 import com.dreamshops.entity.OrderItem;
 import com.dreamshops.entity.User;
 import com.dreamshops.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,11 +19,12 @@ import java.util.Set;
 @NoArgsConstructor
 public class OrderDto {
 
-    private  int orderId;
+    private int orderId;
     private LocalDateTime orderDateTime;
     private BigDecimal totalAmount;
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
-    private Set<OrderItem> orderItem = new HashSet<>();
+    private Set<OrderItemDto> orderItem = new HashSet<>();
+    @JsonIgnore
     private User user;
 }

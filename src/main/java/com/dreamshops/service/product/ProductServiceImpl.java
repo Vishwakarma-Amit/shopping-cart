@@ -84,7 +84,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public Product updateProduct(ProductRequest request, int productId) {
+    public ProductDto updateProduct(ProductRequest request, int productId) {
         final String methodName = "updateProduct";
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(Message.PRODUCT_NOT_FOUND + productId));
@@ -104,7 +104,7 @@ public class ProductServiceImpl implements ProductService{
         existingProduct.setCategory(Objects.requireNonNullElseGet(category, () -> new Category(request.getCategory().getName())));
         log.info("{} - existing product updated, product id - {}", methodName, productId);
 
-        return productRepository.save(existingProduct);
+        return productConverter.convertToDto(productRepository.save(existingProduct));
     }
 
 

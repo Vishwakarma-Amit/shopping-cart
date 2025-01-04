@@ -14,7 +14,7 @@ public interface ProductService {
 	
 	void deleteProductById(int productId);
 
-	Product updateProduct(ProductRequest request, int productId);
+	ProductDto updateProduct(ProductRequest request, int productId);
 
 	List<ProductDto> getAllProducts();
 	

@@ -4,15 +4,21 @@ import com.dreamshops.dto.CartItemDto;
 import com.dreamshops.entity.Cart;
 import com.dreamshops.entity.CartItem;
 import com.dreamshops.entity.Product;
+import com.dreamshops.entity.User;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CartRepository;
 import com.dreamshops.repository.ProductRepository;
+import com.dreamshops.repository.UserRepository;
+import com.dreamshops.service.user.UserService;
 import com.dreamshops.utility.Message;
 import com.dreamshops.utility.Converter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,11 +28,12 @@ public class CartItemServiceImpl implements  CartItemService{
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final CartService cartService;
+    private final UserRepository userRepository;
     private final Converter converter;
 
     @Override
     @Transactional
-    public void createCartItem(int cartId, int productId, int quantity) {
+    public void createCartItem(int cartId, int productId, int quantity, int userId) {
 
         final String methodName = "createCartItem";
 

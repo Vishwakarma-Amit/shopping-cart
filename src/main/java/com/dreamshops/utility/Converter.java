@@ -54,4 +54,8 @@ public class Converter {
         return cartDto;
     }
 
+    public UserDto convertToDto(User user){
+        return modelMapper.map(user, UserDto.class);
+    }
+
 }

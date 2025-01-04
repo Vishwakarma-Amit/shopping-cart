@@ -39,9 +39,12 @@ public class CartItemController {
         try{
             int cartId = cartItemRequest.getCartId();
             if (cartId == 0){
-                cartId = cartService.initializeCart();
+                cartId = cartService.initializeCart(cartItemRequest.getUserId());
             }
-            cartItemService.createCartItem(cartId, cartItemRequest.getProductId(), cartItemRequest.getQuantity());
+            if(cartItemRequest.getUserId()==0){
+                return new ResponseEntity<>(new ApiResponse(Message.FAILED,"User Id must not be null"), HttpStatus.BAD_REQUEST);
+            }
+            cartItemService.createCartItem(cartId, cartItemRequest.getProductId(), cartItemRequest.getQuantity(), cartItemRequest.getUserId());
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item added successfully!" ), HttpStatus.CREATED);
         }catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);

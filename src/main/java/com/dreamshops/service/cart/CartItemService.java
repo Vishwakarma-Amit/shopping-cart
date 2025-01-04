@@ -4,7 +4,7 @@ import com.dreamshops.dto.CartItemDto;
 
 public interface CartItemService {
 
-    void createCartItem(int cartId, int productId, int quantity);
+    void createCartItem(int cartId, int productId, int quantity, int userId);
 
     void removeItemFromCart(int cartId, int productId);
 
