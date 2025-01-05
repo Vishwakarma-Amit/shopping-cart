@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService{
     private final Converter productConverter;
 
     @Override
-    public Product addProduct(ProductRequest request) {
+    public ProductDto addProduct(ProductRequest request) {
         final String methodName = "addProduct";
         // check if the category is found in the DB
         // If Yes, set it as the new product category
@@ -40,9 +40,26 @@ public class ProductServiceImpl implements ProductService{
             category = categoryRepository.save(new Category(request.getCategory().getName()));
         }
         log.info("{} - category id - {}", methodName, category.getCategoryId());
-        Product product =productRepository.save(createProduct(request, category));
+
+        Product toBeSaved = createProduct(request, category);
+
+        Product productExists = productExist(request.getName(), request.getBrand());
+        if(productExists!=null){
+            productExists.setInventory(toBeSaved.getInventory()+productExists.getInventory());
+            return productConverter.convertToDto(
+                    productRepository.save(productExists)
+            );
+        }
+        Product product = productRepository.save(toBeSaved);
         log.info("{} - product persisted in db successfully - {}", methodName, product.getProductId());
-        return product;
+        return productConverter.convertToDto(product);
+    }
+
+    private Product productExist(String name, String brand) {
+        List<Product> products = productRepository.findByBrandAndName(brand, name);
+        log.info("add Product :: product already exists, updating quantity...");
+
+        return Objects.requireNonNull(products).get(0);
     }
 
     private Product createProduct(ProductRequest request, Category category) {

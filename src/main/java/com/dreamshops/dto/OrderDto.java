@@ -1,6 +1,5 @@
 package com.dreamshops.dto;
 
-import com.dreamshops.entity.OrderItem;
 import com.dreamshops.entity.User;
 import com.dreamshops.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,6 +19,7 @@ import java.util.Set;
 public class OrderDto {
 
     private int orderId;
+    private int userId;
     private LocalDateTime orderDateTime;
     private BigDecimal totalAmount;
     @Enumerated(EnumType.STRING)

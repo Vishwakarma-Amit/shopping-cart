@@ -67,7 +67,7 @@ public class Converter {
             orderItemDtos.add(modelMapper.map(orderItem, OrderItemDto.class));
         }
         orderDto.setOrderItem(orderItemDtos);
-
+        orderDto.setUserId(order.getUser().getUserId());
         return orderDto;
 
     }
