@@ -45,7 +45,7 @@ public class CartItemServiceImpl implements  CartItemService{
         Cart cart;
 
         if(user!=null && user.getCart()==null) {
-            cart = cartService.getCart(cartService.initializeCart(cartItemRequest.getUserId()));
+            cart = cartService.initializeCart(user);
         }else{
             cart = Objects.requireNonNull(user).getCart();
         }

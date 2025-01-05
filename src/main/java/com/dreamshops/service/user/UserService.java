@@ -1,7 +1,6 @@
 package com.dreamshops.service.user;
 
 import com.dreamshops.dto.UserDto;
-import com.dreamshops.entity.User;
 import com.dreamshops.request.UserRequest;
 
 public interface UserService {

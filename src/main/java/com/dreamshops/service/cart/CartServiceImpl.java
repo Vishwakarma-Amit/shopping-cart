@@ -6,7 +6,6 @@ import com.dreamshops.entity.User;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CartItemRepository;
 import com.dreamshops.repository.CartRepository;
-import com.dreamshops.repository.UserRepository;
 import com.dreamshops.utility.Converter;
 import com.dreamshops.utility.Message;
 import lombok.RequiredArgsConstructor;
@@ -23,22 +22,20 @@ public class CartServiceImpl implements CartService{
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final UserRepository userRepository;
 
     private final Converter converter;
 
     @Override
-    public int initializeCart(int userId){
+    public Cart initializeCart(User user){
         final String methodName = "initializeCart";
         Cart cart = new Cart();
-        User saveUser = userRepository.findById(userId)
-                .orElseThrow(()->new ResourceNotFoundException(Message.USER_NOT_FOUND+userId));
-        cart.setUser(saveUser);
+
+        cart.setUser(user);
         log.info("{} - cart created", methodName);
 
         Cart savedCart = cartRepository.save(cart);
         log.info("{} - cart initialized, cart id - {}", methodName, savedCart.getCartId());
-        return savedCart.getCartId();
+        return savedCart;
     }
 
     @Override
