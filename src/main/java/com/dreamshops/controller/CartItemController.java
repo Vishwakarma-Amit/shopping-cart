@@ -44,7 +44,7 @@ public class CartItemController {
         } catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (ProductOutOfStockException ex) {
-            return new ResponseEntity<>(new ApiResponse(Message.OUT_OF_STOCK,ex.getMessage()), HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.NOT_ACCEPTABLE);
         } catch (Exception ex) {
             return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

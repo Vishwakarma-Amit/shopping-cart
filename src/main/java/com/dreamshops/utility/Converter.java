@@ -57,7 +57,11 @@ public class Converter {
     }
 
     public UserDto convertToDto(User user){
-        return modelMapper.map(user, UserDto.class);
+        List<OrderDto> orderDtos = user.getOrder().stream().map(this::convertToDto).toList();
+
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+        userDto.setOrders(orderDtos);
+        return userDto;
     }
 
     public OrderDto convertToDto(Order order){
