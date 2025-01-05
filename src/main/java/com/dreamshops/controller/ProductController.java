@@ -6,6 +6,7 @@ import com.dreamshops.request.ProductRequest;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.product.ProductService;
 import com.dreamshops.utility.Message;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductRequest productRequest){
+    public ResponseEntity<ApiResponse> addProduct(@Valid @RequestBody ProductRequest productRequest){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, productService.addProduct(productRequest)), HttpStatus.CREATED);
         }catch (Exception ex){

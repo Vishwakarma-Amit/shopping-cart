@@ -2,8 +2,6 @@ package com.dreamshops.utility;
 
 public class Message {
 
-
-
     private Message(){
     }
 
@@ -27,4 +25,5 @@ public class Message {
     public static final String CART_NOT_FOUND_WITH_USERID = "Cart not found with user id - ";
     public static final String USER_ALREADY_EXISTS = "User already exists";
     public static final String SOMETHING_WENT_WRONG = "Something went wrong!";
+    public static final String OUT_OF_STOCK = "Requested product quantity is greater the available product in inventory ";
 }
