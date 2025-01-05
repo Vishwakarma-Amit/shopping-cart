@@ -3,12 +3,11 @@ package com.dreamshops.service.product;
 import java.util.List;
 
 import com.dreamshops.dto.ProductDto;
-import com.dreamshops.entity.Product;
 import com.dreamshops.request.ProductRequest;
 
 public interface ProductService {
 	
-	Product addProduct (ProductRequest request);
+	ProductDto addProduct (ProductRequest request);
 	
 	ProductDto getProductById(int productId);
 	

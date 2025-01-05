@@ -57,7 +57,12 @@ public class Converter {
     }
 
     public UserDto convertToDto(User user){
-        return modelMapper.map(user, UserDto.class);
+        List<OrderDto> orderDtos = user.getOrder().stream().map(this::convertToDto).toList();
+
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+        userDto.setOrders(orderDtos);
+        userDto.setCart(convertToDto(user.getCart()));
+        return userDto;
     }
 
     public OrderDto convertToDto(Order order){
@@ -67,7 +72,7 @@ public class Converter {
             orderItemDtos.add(modelMapper.map(orderItem, OrderItemDto.class));
         }
         orderDto.setOrderItem(orderItemDtos);
-
+        orderDto.setUserId(order.getUser().getUserId());
         return orderDto;
 
     }

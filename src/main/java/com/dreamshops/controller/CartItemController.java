@@ -1,5 +1,6 @@
 package com.dreamshops.controller;
 
+import com.dreamshops.exception.ProductOutOfStockException;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.request.CartItemRequest;
 import com.dreamshops.response.ApiResponse;
@@ -40,8 +41,10 @@ public class CartItemController {
             }
             cartItemService.createCartItem(cartItemRequest);
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item added successfully!" ), HttpStatus.CREATED);
-        }catch (ResourceNotFoundException ex) {
+        } catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (ProductOutOfStockException ex) {
+            return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.NOT_ACCEPTABLE);
         } catch (Exception ex) {
             return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

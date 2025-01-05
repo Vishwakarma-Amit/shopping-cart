@@ -5,6 +5,7 @@ import com.dreamshops.entity.Cart;
 import com.dreamshops.entity.CartItem;
 import com.dreamshops.entity.Product;
 import com.dreamshops.entity.User;
+import com.dreamshops.exception.ProductOutOfStockException;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CartRepository;
 import com.dreamshops.repository.ProductRepository;
@@ -56,6 +57,11 @@ public class CartItemServiceImpl implements  CartItemService{
         Product product = productRepository.findById(productId)
                 .orElseThrow(()->new ResourceNotFoundException(Message.PRODUCT_NOT_FOUND+productId));
         log.info("{} - product found, productId - {}", methodName, product.getProductId());
+
+        if(quantity>product.getInventory()){
+            log.info("Ordered quantity is more than inventory!");
+            throw new ProductOutOfStockException(Message.OUT_OF_STOCK+productId);
+        }
 
         CartItem cartItem = cart.getCartItems()
                 .stream()

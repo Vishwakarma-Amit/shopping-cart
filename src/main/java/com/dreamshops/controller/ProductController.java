@@ -1,11 +1,13 @@
 package com.dreamshops.controller;
 
 import com.dreamshops.dto.ProductDto;
+import com.dreamshops.exception.AlreadyExistsException;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.request.ProductRequest;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.product.ProductService;
 import com.dreamshops.utility.Message;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,10 +44,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductRequest productRequest){
+    public ResponseEntity<ApiResponse> addProduct(@Valid @RequestBody ProductRequest productRequest){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, productService.addProduct(productRequest)), HttpStatus.CREATED);
-        }catch (Exception ex){
+        }catch (AlreadyExistsException ex){
+            return new ResponseEntity<>(new ApiResponse(Message.FAILED, ex.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception ex){
             return new ResponseEntity<>(new ApiResponse(Message.FAILED, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

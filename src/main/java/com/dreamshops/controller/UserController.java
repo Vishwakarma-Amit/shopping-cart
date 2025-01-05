@@ -6,6 +6,7 @@ import com.dreamshops.request.UserRequest;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.user.UserService;
 import com.dreamshops.utility.Message;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse> createUser(@RequestBody UserRequest userRequest){
+    public ResponseEntity<ApiResponse> createUser(@Valid @RequestBody UserRequest userRequest){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, userService.createUser(userRequest)), HttpStatus.CREATED);
         } catch (AlreadyExistsException e) {
