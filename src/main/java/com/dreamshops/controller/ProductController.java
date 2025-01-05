@@ -1,6 +1,7 @@
 package com.dreamshops.controller;
 
 import com.dreamshops.dto.ProductDto;
+import com.dreamshops.exception.AlreadyExistsException;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.request.ProductRequest;
 import com.dreamshops.response.ApiResponse;
@@ -46,7 +47,9 @@ public class ProductController {
     public ResponseEntity<ApiResponse> addProduct(@Valid @RequestBody ProductRequest productRequest){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, productService.addProduct(productRequest)), HttpStatus.CREATED);
-        }catch (Exception ex){
+        }catch (AlreadyExistsException ex){
+            return new ResponseEntity<>(new ApiResponse(Message.FAILED, ex.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception ex){
             return new ResponseEntity<>(new ApiResponse(Message.FAILED, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

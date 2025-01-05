@@ -3,6 +3,7 @@ package com.dreamshops.service.product;
 import com.dreamshops.dto.ProductDto;
 import com.dreamshops.entity.Category;
 import com.dreamshops.entity.Product;
+import com.dreamshops.exception.AlreadyExistsException;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CategoryRepository;
 import com.dreamshops.repository.ProductRepository;
@@ -35,22 +36,19 @@ public class ProductServiceImpl implements ProductService{
         // If Yes, set it as the new product category
         // If No, the save it as a new category
         // Then set as the new product category.
+
+        Product productExists = productExist(request.getName(), request.getBrand());
+        if(productExists!=null){
+            throw new AlreadyExistsException(Message.PRODUCT_ALREADY_EXISTS+productExists.getProductId());
+        }
+
         Category category = categoryRepository.findByName(request.getCategory().getName());
         if(category==null){
             category = categoryRepository.save(new Category(request.getCategory().getName()));
         }
         log.info("{} - category id - {}", methodName, category.getCategoryId());
 
-        Product toBeSaved = createProduct(request, category);
-
-        Product productExists = productExist(request.getName(), request.getBrand());
-        if(productExists!=null){
-            productExists.setInventory(toBeSaved.getInventory()+productExists.getInventory());
-            return productConverter.convertToDto(
-                    productRepository.save(productExists)
-            );
-        }
-        Product product = productRepository.save(toBeSaved);
+        Product product = productRepository.save(createProduct(request, category));
         log.info("{} - product persisted in db successfully - {}", methodName, product.getProductId());
         return productConverter.convertToDto(product);
     }
@@ -104,7 +102,7 @@ public class ProductServiceImpl implements ProductService{
 
         existingProduct.setName(request.getName()!=null && request.getName().isEmpty() ? request.getName() : existingProduct.getName());
         existingProduct.setBrand(request.getBrand()!=null && request.getBrand().isEmpty()? request.getBrand() : existingProduct.getBrand());
-        existingProduct.setInventory(request.getInventory()>=0 ? request.getInventory() : existingProduct.getInventory());
+        existingProduct.setInventory(request.getInventory()>=0 ? request.getInventory()+existingProduct.getInventory() : existingProduct.getInventory());
         existingProduct.setPrice(request.getPrice().compareTo(new BigDecimal(0))>=0?request.getPrice():existingProduct.getPrice());
         existingProduct.setDescription(request.getDescription()!=null && request.getDescription().isEmpty()? request.getDescription() : existingProduct.getDescription());
 

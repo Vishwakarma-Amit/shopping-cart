@@ -61,6 +61,7 @@ public class Converter {
 
         UserDto userDto = modelMapper.map(user, UserDto.class);
         userDto.setOrders(orderDtos);
+        userDto.setCart(convertToDto(user.getCart()));
         return userDto;
     }
 
