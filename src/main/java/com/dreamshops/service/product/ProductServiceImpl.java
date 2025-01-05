@@ -5,14 +5,12 @@ import com.dreamshops.entity.Category;
 import com.dreamshops.entity.Product;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CategoryRepository;
-import com.dreamshops.repository.ImageRepository;
 import com.dreamshops.repository.ProductRepository;
 import com.dreamshops.request.ProductRequest;
 import com.dreamshops.utility.Message;
 import com.dreamshops.utility.Converter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,10 +25,6 @@ public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
 
     private final CategoryRepository categoryRepository;
-
-    private final ImageRepository imageRepository;
-
-    private final ModelMapper modelMapper;
 
     private final Converter productConverter;
 

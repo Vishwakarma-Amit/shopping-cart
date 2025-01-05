@@ -1,7 +1,6 @@
 package com.dreamshops.controller;
 
 import com.dreamshops.dto.OrderDto;
-import com.dreamshops.entity.Order;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.order.OrderService;

@@ -1,7 +1,6 @@
 package com.dreamshops.service.order;
 
 import com.dreamshops.dto.OrderDto;
-import com.dreamshops.dto.OrderItemDto;
 import com.dreamshops.entity.Cart;
 import com.dreamshops.entity.Order;
 import com.dreamshops.entity.OrderItem;
@@ -11,19 +10,18 @@ import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.OrderRepository;
 import com.dreamshops.repository.ProductRepository;
 import com.dreamshops.service.cart.CartService;
+import com.dreamshops.utility.Converter;
 import com.dreamshops.utility.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 @Service
 @Slf4j
@@ -33,8 +31,9 @@ public class OrderServiceImpl implements  OrderService{
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final CartService cartService;
-    private final ModelMapper modelMapper;
+    private final Converter orderConverter;
 
+    @Transactional
     @Override
     public OrderDto placeOrder(int userId) {
         final String methodName = "placeOrder";
@@ -48,7 +47,7 @@ public class OrderServiceImpl implements  OrderService{
         log.info("{} - order processed for user with id: {}", methodName, userId);
 
         cartService.clearCart(cart.getCartId());
-        return convertToDto(savedOrder);
+        return orderConverter.convertToDto(savedOrder);
     }
 
     private Order createOrder(Cart cart){
@@ -87,7 +86,7 @@ public class OrderServiceImpl implements  OrderService{
         final String methodName= "getOrder";
         log.info("{} - Order fetched with id: {}", methodName, orderId);
 
-        return orderRepository.findById(orderId).map(this::convertToDto)
+        return orderRepository.findById(orderId).map(orderConverter::convertToDto)
                 .orElseThrow(()->new ResourceNotFoundException(Message.ORDER_NOT_FOUND +orderId));
 
     }
@@ -98,20 +97,8 @@ public class OrderServiceImpl implements  OrderService{
         log.info("{} - Order list fetched for user id: {}", methodName, userId);
         return orderRepository.findByUserUserId(userId)
                 .stream()
-                .map(this::convertToDto)
+                .map(orderConverter::convertToDto)
                 .toList();
     }
 
-    private OrderDto convertToDto(Order order){
-        log.info("{} - {} - {} - {}", order.getOrderId(), order.getUser().getEmail(), order.getOrderDateTime(), order.getOrderStatus());
-        OrderDto orderDto = modelMapper.map(order, OrderDto.class);
-        Set<OrderItemDto> orderItemDtos = new HashSet<>();
-        for (OrderItem orderItem : order.getOrderItem()) {
-            orderItemDtos.add(modelMapper.map(orderItem, OrderItemDto.class));
-        }
-        orderDto.setOrderItem(orderItemDtos);
-
-        return orderDto;
-
-    }
 }

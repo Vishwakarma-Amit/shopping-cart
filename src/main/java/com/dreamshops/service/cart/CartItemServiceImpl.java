@@ -9,16 +9,16 @@ import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.CartRepository;
 import com.dreamshops.repository.ProductRepository;
 import com.dreamshops.repository.UserRepository;
-import com.dreamshops.service.user.UserService;
+import com.dreamshops.request.CartItemRequest;
 import com.dreamshops.utility.Message;
 import com.dreamshops.utility.Converter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Objects;
+
 
 @Slf4j
 @Service
@@ -33,11 +33,22 @@ public class CartItemServiceImpl implements  CartItemService{
 
     @Override
     @Transactional
-    public void createCartItem(int cartId, int productId, int quantity, int userId) {
-
+    public void createCartItem(CartItemRequest cartItemRequest) {
         final String methodName = "createCartItem";
 
-        Cart cart = cartService.getCart(cartId);
+        int productId = cartItemRequest.getProductId();
+        int quantity = cartItemRequest.getQuantity();
+
+        User user = userRepository.findById(cartItemRequest.getUserId())
+                .orElseThrow(()-> new ResourceNotFoundException(Message.USER_NOT_FOUND + cartItemRequest.getUserId()));
+
+        Cart cart;
+
+        if(user!=null && user.getCart()==null) {
+            cart = cartService.getCart(cartService.initializeCart(cartItemRequest.getUserId()));
+        }else{
+            cart = Objects.requireNonNull(user).getCart();
+        }
         log.info("{} - cart found, id - {}", methodName, cart.getCartId());
 
 

@@ -4,7 +4,6 @@ import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.request.CartItemRequest;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.cart.CartItemService;
-import com.dreamshops.service.cart.CartService;
 import com.dreamshops.utility.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class CartItemController {
 
     private final CartItemService cartItemService;
-
-    private final CartService cartService;
 
     @GetMapping("/{cartId}/{productId}")
     @Operation(description = "Get cart item by cart id and product id", summary = "Get cart item" )
@@ -37,14 +34,11 @@ public class CartItemController {
     @Operation(summary = "Add cart item", description = "add product item into cart by product id and quantity" )
     public ResponseEntity<ApiResponse> createCartItem(@RequestBody CartItemRequest cartItemRequest) {
         try{
-            int cartId = cartItemRequest.getCartId();
-            if (cartId == 0){
-                cartId = cartService.initializeCart(cartItemRequest.getUserId());
-            }
+
             if(cartItemRequest.getUserId()==0){
                 return new ResponseEntity<>(new ApiResponse(Message.FAILED,"User Id must not be null"), HttpStatus.BAD_REQUEST);
             }
-            cartItemService.createCartItem(cartId, cartItemRequest.getProductId(), cartItemRequest.getQuantity(), cartItemRequest.getUserId());
+            cartItemService.createCartItem(cartItemRequest);
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item added successfully!" ), HttpStatus.CREATED);
         }catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);

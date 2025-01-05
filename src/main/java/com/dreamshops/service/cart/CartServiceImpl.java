@@ -60,16 +60,26 @@ public class CartServiceImpl implements CartService{
     public void clearCart(int cartId) {
         final String methodName = "clearCart";
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(()->new ResourceNotFoundException(Message.CART_NOT_FOUND+cartId));
+                .orElseThrow(() -> new ResourceNotFoundException(Message.CART_NOT_FOUND + cartId));
         log.info("{} - cart found with id - {}", methodName, cartId);
 
+        // Clear cart items
         cartItemRepository.deleteAllByCartCartId(cartId);
         cart.getCartItems().clear();
-        log.info("{} - removed all the cart item from cart with id - {}", methodName, cartId);
+        log.info("{} - removed all the cart items from cart with id - {}", methodName, cartId);
 
-        cartRepository.deleteById(cartId);
-        log.info("{} - removed cart with id - {} ", methodName, cartId);
+        // Nullify the user reference in the cart
+        if (cart.getUser() != null) {
+            User user = cart.getUser();
+            user.setCart(null); // Remove reference to cart from user
+            cart.setUser(null); // Remove reference to user from cart
+        }
+
+        // Delete the cart
+        cartRepository.delete(cart);
+        log.info("{} - removed cart with id - {}", methodName, cartId);
     }
+
 
     @Override
     public BigDecimal getTotalPrice(int cartId) {
@@ -96,8 +106,9 @@ public class CartServiceImpl implements CartService{
         final String methodName = "getCartByUserId";
         log.info("{} - invoked with user id - {}",methodName, userId);
         Cart cart = cartRepository.findByUserUserId(userId)
-                .orElseThrow(()->new ResourceNotFoundException(Message.USER_NOT_FOUND+userId));
+                .orElseThrow(()->new ResourceNotFoundException(Message.CART_NOT_FOUND_WITH_USERID+userId));
         log.info("{} - cart retrieved by user id - {}",methodName, userId);
         return cart;
     }
+
 }

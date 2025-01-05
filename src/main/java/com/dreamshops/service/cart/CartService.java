@@ -18,4 +18,5 @@ public interface CartService {
     CartDto getCartById(int cartId);
 
     Cart getCartByUserId(int userId);
+
 }
