@@ -29,6 +29,17 @@ public class UserController {
         }
     }
 
+    @GetMapping("/email")
+    public ResponseEntity<ApiResponse> getUserDetailsByEmail(@RequestParam String email){
+        try{
+            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, userService.getUserByEmail(email)), HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (Exception ex) {
+            return new ResponseEntity<>(new ApiResponse(Message.FAILED, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/create")
     public ResponseEntity<ApiResponse> createUser(@RequestBody UserRequest userRequest){
         try{
@@ -40,7 +51,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{userId}")
     public ResponseEntity<ApiResponse> updateUser(@RequestBody UserRequest userRequest, @PathVariable int userId){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.UPDATE_SUCCESSFUL, userService.updateUser(userRequest, userId)), HttpStatus.OK);

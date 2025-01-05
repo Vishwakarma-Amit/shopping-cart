@@ -48,7 +48,6 @@
 			<artifactId>modelmapper-spring</artifactId>
 			<version>3.0.0</version>
 		</dependency>
-		<!-- Springdoc OpenAPI Dependency for Swagger -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>

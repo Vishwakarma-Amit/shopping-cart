@@ -1,6 +1,6 @@
 package com.dreamshops.controller;
 
-import com.dreamshops.entity.Order;
+import com.dreamshops.dto.OrderDto;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.order.OrderService;
@@ -20,7 +20,7 @@ public class OrderController {
     @PostMapping("/{userId}")
     public ResponseEntity<ApiResponse> createOrder(@PathVariable int userId) {
         try {
-            Order order = orderService.placeOrder(userId);
+            OrderDto order = orderService.placeOrder(userId);
             if (order != null && order.getOrderId() != 0) {
                 return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, order), HttpStatus.CREATED);
             } else {
@@ -42,7 +42,7 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse> getOrderByUserId(@PathVariable int userId){
         try{
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS,orderService.getUserOrders(userId)), HttpStatus.OK);

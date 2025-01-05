@@ -1,14 +1,15 @@
 package com.dreamshops.service.order;
 
+import com.dreamshops.dto.OrderDto;
 import com.dreamshops.entity.Order;
 
 import java.util.List;
 
 public interface OrderService {
 
-    Order placeOrder(int userId);
+    OrderDto placeOrder(int userId);
 
-    Order getOrder(int orderId);
+    OrderDto getOrder(int orderId);
 
-    List<Order> getUserOrders(int userId);
+    List<OrderDto> getUserOrders(int userId);
 }

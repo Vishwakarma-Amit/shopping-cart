@@ -1,5 +1,6 @@
 package com.dreamshops.service.order;
 
+import com.dreamshops.dto.OrderDto;
 import com.dreamshops.entity.Cart;
 import com.dreamshops.entity.Order;
 import com.dreamshops.entity.OrderItem;
@@ -9,6 +10,7 @@ import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.repository.OrderRepository;
 import com.dreamshops.repository.ProductRepository;
 import com.dreamshops.service.cart.CartService;
+import com.dreamshops.utility.Converter;
 import com.dreamshops.utility.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -28,10 +31,11 @@ public class OrderServiceImpl implements  OrderService{
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final CartService cartService;
+    private final Converter orderConverter;
 
     @Transactional
     @Override
-    public Order placeOrder(int userId) {
+    public OrderDto placeOrder(int userId) {
         final String methodName = "placeOrder";
         Cart cart = cartService.getCartByUserId(userId);
         Order order = createOrder(cart);
@@ -43,7 +47,7 @@ public class OrderServiceImpl implements  OrderService{
         log.info("{} - order processed for user with id: {}", methodName, userId);
 
         cartService.clearCart(cart.getCartId());
-        return savedOrder;
+        return orderConverter.convertToDto(savedOrder);
     }
 
     private Order createOrder(Cart cart){
@@ -78,18 +82,23 @@ public class OrderServiceImpl implements  OrderService{
     }
 
     @Override
-    public Order getOrder(int orderId) {
+    public OrderDto getOrder(int orderId) {
         final String methodName= "getOrder";
         log.info("{} - Order fetched with id: {}", methodName, orderId);
-        return orderRepository.findById(orderId)
+
+        return orderRepository.findById(orderId).map(orderConverter::convertToDto)
                 .orElseThrow(()->new ResourceNotFoundException(Message.ORDER_NOT_FOUND +orderId));
 
     }
 
     @Override
-    public List<Order> getUserOrders(int userId){
+    public List<OrderDto> getUserOrders(int userId){
         final String methodName= "getUserOrders";
         log.info("{} - Order list fetched for user id: {}", methodName, userId);
-        return orderRepository.findByUserUserId(userId);
+        return orderRepository.findByUserUserId(userId)
+                .stream()
+                .map(orderConverter::convertToDto)
+                .toList();
     }
+
 }

@@ -8,6 +8,8 @@ import java.util.List;
 @Data
 public class CartDto {
     private int cartId;
+    private int userId;
     private BigDecimal totalAmount = BigDecimal.ZERO;
     private List<CartItemDto> items;
+
 }

@@ -2,12 +2,13 @@ package com.dreamshops.service.cart;
 
 import com.dreamshops.dto.CartDto;
 import com.dreamshops.entity.Cart;
+import com.dreamshops.entity.User;
 
 import java.math.BigDecimal;
 
 public interface CartService {
 
-    int initializeCart();
+    Cart initializeCart(User user);
 
     Cart getCart(int cartId);
 
@@ -18,4 +19,5 @@ public interface CartService {
     CartDto getCartById(int cartId);
 
     Cart getCartByUserId(int userId);
+
 }

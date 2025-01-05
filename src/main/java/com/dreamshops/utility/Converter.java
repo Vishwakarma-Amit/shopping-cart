@@ -9,7 +9,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -52,6 +54,22 @@ public class Converter {
         }
         cartDto.setItems(cartItemDtos);
         return cartDto;
+    }
+
+    public UserDto convertToDto(User user){
+        return modelMapper.map(user, UserDto.class);
+    }
+
+    public OrderDto convertToDto(Order order){
+        OrderDto orderDto = modelMapper.map(order, OrderDto.class);
+        Set<OrderItemDto> orderItemDtos = new HashSet<>();
+        for (OrderItem orderItem : order.getOrderItem()) {
+            orderItemDtos.add(modelMapper.map(orderItem, OrderItemDto.class));
+        }
+        orderDto.setOrderItem(orderItemDtos);
+
+        return orderDto;
+
     }
 
 }
