@@ -57,7 +57,10 @@ public class ProductServiceImpl implements ProductService{
         List<Product> products = productRepository.findByBrandAndName(brand, name);
         log.info("add Product :: product already exists, updating quantity...");
 
-        return Objects.requireNonNull(products).get(0);
+        if(products!=null && !products.isEmpty()){
+            return Objects.requireNonNull(products).get(0);
+        }
+        return null;
     }
 
     private Product createProduct(ProductRequest request, Category category) {

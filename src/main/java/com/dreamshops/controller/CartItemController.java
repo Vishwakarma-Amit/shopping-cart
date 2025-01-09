@@ -1,11 +1,14 @@
 package com.dreamshops.controller;
 
+import com.dreamshops.entity.User;
 import com.dreamshops.exception.ProductOutOfStockException;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.request.CartItemRequest;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.cart.CartItemService;
+import com.dreamshops.service.user.UserService;
 import com.dreamshops.utility.Message;
+import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class CartItemController {
 
     private final CartItemService cartItemService;
+    private final UserService userService;
 
     @GetMapping("/{cartId}/{productId}")
     @Operation(description = "Get cart item by cart id and product id", summary = "Get cart item" )
@@ -35,16 +39,16 @@ public class CartItemController {
     @Operation(summary = "Add cart item", description = "add product item into cart by product id and quantity" )
     public ResponseEntity<ApiResponse> createCartItem(@RequestBody CartItemRequest cartItemRequest) {
         try{
+            User user = userService.getAuthenticatedUser();
 
-            if(cartItemRequest.getUserId()==0){
-                return new ResponseEntity<>(new ApiResponse(Message.FAILED,"User Id must not be null"), HttpStatus.BAD_REQUEST);
-            }
-            cartItemService.createCartItem(cartItemRequest);
+            cartItemService.createCartItem(cartItemRequest, user);
             return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, "Item added successfully!" ), HttpStatus.CREATED);
         } catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.NOT_FOUND,ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (ProductOutOfStockException ex) {
             return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.NOT_ACCEPTABLE);
+        } catch (JwtException ex) {
+            return new ResponseEntity<>(new ApiResponse(Message.UNAUTHORIZED,ex.getMessage()), HttpStatus.UNAUTHORIZED);
         } catch (Exception ex) {
             return new ResponseEntity<>(new ApiResponse(Message.FAILED,ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

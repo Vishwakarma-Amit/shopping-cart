@@ -1,18 +1,23 @@
 package com.dreamshops.service.user;
 
 import com.dreamshops.dto.UserDto;
+import com.dreamshops.entity.Role;
 import com.dreamshops.entity.User;
 import com.dreamshops.exception.AlreadyExistsException;
 import com.dreamshops.exception.ResourceNotFoundException;
+import com.dreamshops.repository.RoleRepository;
 import com.dreamshops.repository.UserRepository;
 import com.dreamshops.request.UserRequest;
 import com.dreamshops.utility.Converter;
 import com.dreamshops.utility.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -21,6 +26,8 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final Converter userConverter;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Override
     public UserDto getUserById(int userId) {
@@ -35,15 +42,27 @@ public class UserServiceImpl implements UserService{
     public UserDto createUser(UserRequest userRequest) {
         final String methodName = "createUser";
         log.info("{} - creating user", methodName);
+
+        Set<Role> roles = userRequest.getRoles();
+        Set<Role> rolesToBeAdded = new HashSet<>();
+
+        for(Role role: roles){
+            Role roleExists = roleRepository.findByName(role.getName());
+            if(roleExists!=null){
+                rolesToBeAdded.add(roleExists);
+            }
+        }
+
         User saveUser = Optional.of(userRequest)
                 .filter(user -> !userRepository.existsByEmail(userRequest.getEmail()))
                 .map(request -> {
                     User user = new User();
                     user.setEmail(request.getEmail());
-                    user.setPassword(request.getPassword());
+                    user.setPassword(passwordEncoder.encode(request.getPassword()));
                     user.setFirstName(request.getFirstName());
                     log.info("{}", request.getFirstName());
                     user.setLastName(request.getLastName());
+                    user.setRoles(rolesToBeAdded);
                     log.info("{} - User saved successfully!", methodName);
                     return userRepository.save(user);
                 }).orElseThrow(()->new AlreadyExistsException(Message.USER_ALREADY_EXISTS));
@@ -78,6 +97,13 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto getUserByEmail(String email) {
         return userConverter.convertToDto(userRepository.findByEmail(email));
+    }
+
+    @Override
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email);
     }
 
 }
