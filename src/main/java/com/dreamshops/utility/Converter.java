@@ -44,6 +44,9 @@ public class Converter {
     }
 
     public CartDto convertToDto(Cart cart){
+        if(cart==null){
+            return new CartDto();
+        }
         CartDto cartDto = modelMapper.map(cart, CartDto.class);
 
         List<CartItem> cartItems = cartItemRepository.findByCartCartId(cart.getCartId());
@@ -57,8 +60,10 @@ public class Converter {
     }
 
     public UserDto convertToDto(User user){
-        List<OrderDto> orderDtos = user.getOrder().stream().map(this::convertToDto).toList();
-
+        List<OrderDto> orderDtos = new ArrayList<>();
+        if(user.getOrder()!=null && !user.getOrder().isEmpty()){
+            orderDtos = user.getOrder().stream().map(this::convertToDto).toList();
+        }
         UserDto userDto = modelMapper.map(user, UserDto.class);
         userDto.setOrders(orderDtos);
         userDto.setCart(convertToDto(user.getCart()));

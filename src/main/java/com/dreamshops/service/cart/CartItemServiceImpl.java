@@ -34,14 +34,11 @@ public class CartItemServiceImpl implements  CartItemService{
 
     @Override
     @Transactional
-    public void createCartItem(CartItemRequest cartItemRequest) {
+    public void createCartItem(CartItemRequest cartItemRequest, User user) {
         final String methodName = "createCartItem";
 
         int productId = cartItemRequest.getProductId();
         int quantity = cartItemRequest.getQuantity();
-
-        User user = userRepository.findById(cartItemRequest.getUserId())
-                .orElseThrow(()-> new ResourceNotFoundException(Message.USER_NOT_FOUND + cartItemRequest.getUserId()));
 
         Cart cart;
 

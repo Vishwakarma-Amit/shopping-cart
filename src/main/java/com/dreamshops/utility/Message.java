@@ -22,9 +22,12 @@ public class Message {
     public static final String IMAGE_NOT_FOUND = "Image not found with id - ";
     public static final String ORDER_NOT_FOUND = "Order not found with id -";
     public static final String USER_NOT_FOUND = "User not found with id -";
+    public static final String USER_NOT_FOUND_WITH_EMAIL = "User not found with email -";
     public static final String CART_NOT_FOUND_WITH_USERID = "Cart not found with user id - ";
     public static final String USER_ALREADY_EXISTS = "User already exists";
     public static final String PRODUCT_ALREADY_EXISTS = "Product already exists, please update the product!";
     public static final String SOMETHING_WENT_WRONG = "Something went wrong!";
     public static final String OUT_OF_STOCK = "Requested product quantity is greater the available product in inventory ";
+    public static final String UNAUTHORIZED = "Authentication Failed!";
+    public static final String OPERATION_NOT_PERMITTED = "You don't have permission to this action!";
 }
