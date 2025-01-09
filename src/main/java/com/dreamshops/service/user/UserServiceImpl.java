@@ -53,6 +53,10 @@ public class UserServiceImpl implements UserService{
             }
         }
 
+        if(rolesToBeAdded.isEmpty()){
+            rolesToBeAdded.add(roleRepository.findByName("ROLE_USER"));
+        }
+
         User saveUser = Optional.of(userRequest)
                 .filter(user -> !userRepository.existsByEmail(userRequest.getEmail()))
                 .map(request -> {

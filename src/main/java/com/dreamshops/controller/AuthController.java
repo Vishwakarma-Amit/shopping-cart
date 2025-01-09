@@ -1,10 +1,13 @@
 package com.dreamshops.controller;
 
+import com.dreamshops.exception.AlreadyExistsException;
 import com.dreamshops.request.LoginRequest;
+import com.dreamshops.request.UserRequest;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.response.JwtResponse;
 import com.dreamshops.security.jwt.JwtUtils;
 import com.dreamshops.security.user.ShopUserDetail;
+import com.dreamshops.service.user.UserService;
 import com.dreamshops.utility.Message;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
@@ -45,6 +49,17 @@ public class AuthController {
             return new ResponseEntity<>( new ApiResponse(Message.SUCCESS, response), HttpStatus.OK);
         } catch (AuthenticationException e) {
             return new ResponseEntity<>( new ApiResponse(Message.FAILED, e.getMessage()), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse> createUser(@Valid @RequestBody UserRequest userRequest){
+        try{
+            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, userService.createUser(userRequest)), HttpStatus.CREATED);
+        } catch (AlreadyExistsException e) {
+            return new ResponseEntity<>(new ApiResponse(Message.USER_ALREADY_EXISTS, e.getMessage()), HttpStatus.CONFLICT);
+        }catch (Exception ex) {
+            return new ResponseEntity<>(new ApiResponse(Message.FAILED, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

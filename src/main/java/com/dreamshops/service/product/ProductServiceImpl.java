@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService{
 
     private Product productExist(String name, String brand) {
         List<Product> products = productRepository.findByBrandAndName(brand, name);
-        log.info("add Product :: product already exists, updating quantity...");
+        log.info("add Product :: product already exists, please update the product!");
 
         if(products!=null && !products.isEmpty()){
             return Objects.requireNonNull(products).get(0);
@@ -103,11 +103,11 @@ public class ProductServiceImpl implements ProductService{
 
         log.info("{} - product found from db with product id - {}", methodName, productId);
 
-        existingProduct.setName(request.getName()!=null && request.getName().isEmpty() ? request.getName() : existingProduct.getName());
-        existingProduct.setBrand(request.getBrand()!=null && request.getBrand().isEmpty()? request.getBrand() : existingProduct.getBrand());
+        existingProduct.setName(request.getName()!=null && !request.getName().isEmpty() ? request.getName() : existingProduct.getName());
+        existingProduct.setBrand(request.getBrand()!=null && !request.getBrand().isEmpty()? request.getBrand() : existingProduct.getBrand());
         existingProduct.setInventory(request.getInventory()>=0 ? request.getInventory()+existingProduct.getInventory() : existingProduct.getInventory());
         existingProduct.setPrice(request.getPrice().compareTo(new BigDecimal(0))>=0?request.getPrice():existingProduct.getPrice());
-        existingProduct.setDescription(request.getDescription()!=null && request.getDescription().isEmpty()? request.getDescription() : existingProduct.getDescription());
+        existingProduct.setDescription(request.getDescription()!=null && !request.getDescription().isEmpty()? request.getDescription() : existingProduct.getDescription());
 
         log.info("{} - updated product details, product id - {}", methodName, productId);
 

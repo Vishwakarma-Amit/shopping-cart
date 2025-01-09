@@ -1,15 +1,14 @@
 package com.dreamshops.controller;
 
-import com.dreamshops.exception.AlreadyExistsException;
 import com.dreamshops.exception.ResourceNotFoundException;
 import com.dreamshops.request.UserRequest;
 import com.dreamshops.response.ApiResponse;
 import com.dreamshops.service.user.UserService;
 import com.dreamshops.utility.Message;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -41,17 +40,6 @@ public class UserController {
         }
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ApiResponse> createUser(@Valid @RequestBody UserRequest userRequest){
-        try{
-            return new ResponseEntity<>(new ApiResponse(Message.SUCCESS, userService.createUser(userRequest)), HttpStatus.CREATED);
-        } catch (AlreadyExistsException e) {
-            return new ResponseEntity<>(new ApiResponse(Message.USER_ALREADY_EXISTS, e.getMessage()), HttpStatus.CONFLICT);
-        }catch (Exception ex) {
-            return new ResponseEntity<>(new ApiResponse(Message.FAILED, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @PutMapping("/update/{userId}")
     public ResponseEntity<ApiResponse> updateUser(@RequestBody UserRequest userRequest, @PathVariable int userId){
         try{
@@ -63,6 +51,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN)")
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable int userId){
         try{
