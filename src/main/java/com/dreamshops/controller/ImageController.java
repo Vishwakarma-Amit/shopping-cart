@@ -41,7 +41,6 @@ public class ImageController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/download/{imageId}")
     public ResponseEntity<Resource> downloadImage(@PathVariable int imageId) throws SQLException {
         Image image = imageService.getImageById(imageId);
