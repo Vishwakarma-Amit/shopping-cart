@@ -7,8 +7,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,13 +20,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Slf4j
+@RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
-    private ShopUserDetailService userDetailService;
+    private final JwtUtils jwtUtils;
+    private final ShopUserDetailService userDetailService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -42,7 +40,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 if (jwtUtils.validateToken(jwtToken)) {
                     // Extract username from token
                     String username = jwtUtils.getUsernameFromToken(jwtToken);
-                    log.info("Extracted username: {}", username);
 
                     // Load user details and set authentication
                     UserDetails userDetails = userDetailService.loadUserByUsername(username);

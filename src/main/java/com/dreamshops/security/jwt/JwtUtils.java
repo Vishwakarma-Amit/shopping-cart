@@ -28,7 +28,6 @@ public class JwtUtils {
 
     public String generateTokenForUser(Authentication authentication) {
         ShopUserDetail userPrincipal = (ShopUserDetail) authentication.getPrincipal();
-        log.info("Expiration time: {}", expirationTime);
 
         List<String> roles = userPrincipal.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

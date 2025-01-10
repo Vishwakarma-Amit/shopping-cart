@@ -2,6 +2,7 @@ package com.dreamshops.security.config;
 
 import com.dreamshops.security.jwt.AuthTokenFilter;
 import com.dreamshops.security.jwt.JwtAuthEntryPoint;
+import com.dreamshops.security.jwt.JwtUtils;
 import com.dreamshops.security.user.ShopUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,7 +26,7 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class ShopConfig {
 
     private static final List<String> SECURED_URLS = List.of(
@@ -33,6 +34,7 @@ public class ShopConfig {
 
     private final ShopUserDetailService userDetailService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
+    private final JwtUtils jwtUtils;
 
     @Bean
     public ModelMapper modelMapper() {
@@ -46,7 +48,7 @@ public class ShopConfig {
 
     @Bean
     public AuthTokenFilter authTokenFilter(){
-        return new AuthTokenFilter();
+        return new AuthTokenFilter(jwtUtils, userDetailService);
     }
 
     @Bean
